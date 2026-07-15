@@ -1,110 +1,144 @@
-import { IconWallet } from '@tabler/icons-react';
-import { Cell, Pie, PieChart, Tooltip } from 'recharts';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
+import { Link } from '@inertiajs/react';
+import {
+    IconCash,
+    IconBuildingBank,
+    IconDeviceMobile,
+    IconWallet,
+    IconArrowRight,
+} from '@tabler/icons-react';
+import {
+    Wallet as LucideWallet,
+    Landmark,
+    CreditCard,
+    Banknote,
+    Coins,
+    PiggyBank,
+    Smartphone,
+    Bitcoin,
+    Activity,
+    Briefcase,
+} from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface WalletEntry {
-  name: string;
-  balance: number;
-  type: string;
-  color: string | null;
+    name: string;
+    balance: number;
+    type: string;
+    color: string | null;
+    icon?: string | null;
 }
 
-const PALETTE = [
-  '#3B5BDB', '#12B76A', '#F79009', '#F04438',
-  '#9B8AFB', '#06B6D4', '#EC4899', '#84CC16',
-];
+const WALLET_ICONS: Record<string, React.ElementType> = {
+    Wallet: LucideWallet,
+    Landmark,
+    CreditCard,
+    Banknote,
+    Coins,
+    PiggyBank,
+    Smartphone,
+    Bitcoin,
+    Activity,
+    Briefcase,
+};
+
+function getTypeIcon(wallet: WalletEntry) {
+    if (wallet.icon && WALLET_ICONS[wallet.icon]) {
+        const Icon = WALLET_ICONS[wallet.icon];
+        return <Icon className="h-4 w-4" />;
+    }
+    switch (wallet.type) {
+        case 'cash':
+            return <IconCash className="h-4 w-4" />;
+        case 'bank':
+            return <IconBuildingBank className="h-4 w-4" />;
+        case 'ewallet':
+            return <IconDeviceMobile className="h-4 w-4" />;
+        default:
+            return <IconWallet className="h-4 w-4" />;
+    }
+}
+
+function getTypeLabel(type: string) {
+    switch (type) {
+        case 'cash':
+            return 'Cash on hand';
+        case 'bank':
+            return 'Bank account';
+        case 'ewallet':
+            return 'E-Wallet / Digital';
+        default:
+            return 'Digital account';
+    }
+}
 
 const fmt = (n: number) =>
-  new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(n);
+    new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+        minimumFractionDigits: 0,
+    }).format(n);
 
 export function WalletDonutChart({ wallets }: { wallets: WalletEntry[] }) {
-  const data = wallets.filter(w => w.balance > 0);
-  const total = data.reduce((s, w) => s + w.balance, 0);
+    if (wallets.length === 0) {
+        return (
+            <div className="bg-card/30 border border-border/50 rounded-2xl p-8 text-center text-muted-foreground flex flex-col items-center justify-center gap-2">
+                <IconWallet className="h-8 w-8 text-muted-foreground/50" />
+                <p className="text-sm">Belum ada wallet aktif.</p>
+            </div>
+        );
+    }
 
-  const chartConfig = data.reduce<ChartConfig>((cfg, w, i) => {
-    cfg[w.name] = { label: w.name, color: w.color || PALETTE[i % PALETTE.length] };
-    return cfg;
-  }, {});
-
-  if (data.length === 0) {
     return (
-      <Card className="bg-card/40 border border-border/50 shadow-xs backdrop-blur-xs">
-        <CardHeader>
-          <CardTitle className="text-sm font-semibold flex items-center gap-2">
-            <IconWallet className="h-4 w-4 text-primary" />Wallet Distribution
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="flex items-center justify-center h-[200px] text-xs text-muted-foreground">
-          No wallet data yet.
-        </CardContent>
-      </Card>
-    );
-  }
+        <div className="space-y-3">
+            <div className="flex items-center justify-between px-0.5">
+                <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                    <IconWallet className="h-4 w-4 text-primary" />
+                    Wallet Accounts
+                </h3>
+                <Link
+                    href="/wallets"
+                    className="text-[11px] text-primary font-semibold hover:underline flex items-center gap-0.5"
+                >
+                    Kelola <IconArrowRight className="h-3 w-3" />
+                </Link>
+            </div>
 
-  return (
-    <Card className="bg-card/40 border border-border/50 shadow-xs backdrop-blur-xs">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-sm font-semibold flex items-center gap-2">
-          <IconWallet className="h-4 w-4 text-primary" />Wallet Balance Distribution
-        </CardTitle>
-        <CardDescription>Alokasi saldo antar akun</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="flex flex-col sm:flex-row items-center gap-4">
-          <ChartContainer config={chartConfig} className="h-[180px] w-[180px] flex-shrink-0">
-            <PieChart>
-              <Tooltip
-                formatter={(value: number) => [fmt(value), '']}
-                contentStyle={{
-                  background: 'hsl(var(--card))',
-                  border: '1px solid hsl(var(--border))',
-                  borderRadius: '8px',
-                  fontSize: '12px',
-                }}
-              />
-              <Pie
-                data={data}
-                dataKey="balance"
-                nameKey="name"
-                cx="50%"
-                cy="50%"
-                outerRadius={80}
-                innerRadius={48}
-                paddingAngle={2}
-              >
-                {data.map((entry, i) => (
-                  <Cell key={entry.name} fill={entry.color || PALETTE[i % PALETTE.length]} opacity={0.9} />
+            <div className="grid grid-cols-1 gap-3 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card *:data-[slot=card]:shadow-xs dark:*:data-[slot=card]:bg-card">
+                {wallets.map((wallet, i) => (
+                    <Card key={`${wallet.name}-${i}`} className="@container/card">
+                        <CardHeader>
+                            <CardDescription className="capitalize">{wallet.type}</CardDescription>
+                            <CardTitle className="text-xl font-semibold tabular-nums @[250px]/card:text-2xl">
+                                {fmt(wallet.balance)}
+                            </CardTitle>
+                            <CardAction>
+                                <Badge
+                                    variant="outline"
+                                    style={
+                                        wallet.color
+                                            ? {
+                                                  borderColor: wallet.color + '60',
+                                                  color: wallet.color,
+                                                  background: wallet.color + '15',
+                                              }
+                                            : undefined
+                                    }
+                                >
+                                    {getTypeIcon(wallet)}
+                                </Badge>
+                            </CardAction>
+                        </CardHeader>
+                        <CardFooter className="flex-col items-start gap-1 text-sm">
+                            <div className="line-clamp-1 flex gap-2 font-medium text-foreground/90">
+                                {wallet.name}
+                                {getTypeIcon(wallet)}
+                            </div>
+                            <div className="text-muted-foreground text-xs">{getTypeLabel(wallet.type)}</div>
+                        </CardFooter>
+                    </Card>
                 ))}
-              </Pie>
-            </PieChart>
-          </ChartContainer>
-
-          <div className="flex-1 w-full space-y-2 min-w-0">
-            {data.map((w, i) => {
-              const pct = total > 0 ? (w.balance / total) * 100 : 0;
-              const color = w.color || PALETTE[i % PALETTE.length];
-              return (
-                <div key={w.name} className="space-y-0.5">
-                  <div className="flex justify-between text-xs">
-                    <span className="flex items-center gap-1.5 font-medium text-foreground/90 truncate">
-                      <span className="inline-block w-2 h-2 rounded-full flex-shrink-0" style={{ background: color }} />
-                      {w.name}
-                    </span>
-                    <span className="text-muted-foreground tabular-nums ml-2 flex-shrink-0">
-                      {pct.toFixed(0)}%
-                    </span>
-                  </div>
-                  <div className="h-1 w-full bg-muted/40 rounded-full overflow-hidden">
-                    <div className="h-full rounded-full" style={{ width: `${pct}%`, background: color }} />
-                  </div>
-                  <div className="text-[10px] text-muted-foreground tabular-nums">{fmt(w.balance)}</div>
-                </div>
-              );
-            })}
-          </div>
+            </div>
         </div>
-      </CardContent>
-    </Card>
-  );
+    );
 }

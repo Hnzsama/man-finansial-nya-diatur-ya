@@ -32,6 +32,20 @@ class DatabaseSeeder extends Seeder
             'password' => bcrypt('password'),
         ]);
 
+        // ── Primary user: hnzsama@gmail.com ───────────────────────────────
+        $primaryUser = User::firstOrCreate([
+            'email' => 'hnzsama@gmail.com',
+        ], [
+            'name' => 'Hnzsama',
+            'password' => bcrypt('password'),
+        ]);
+
+        if ($primaryUser->wallets()->count() === 0) {
+            Wallet::factory()->create(['user_id' => $primaryUser->id, 'name' => 'Cash', 'type' => 'cash', 'current_balance' => 750000]);
+            Wallet::factory()->create(['user_id' => $primaryUser->id, 'name' => 'BCA', 'type' => 'bank', 'current_balance' => 15000000]);
+            Wallet::factory()->create(['user_id' => $primaryUser->id, 'name' => 'GoPay', 'type' => 'ewallet', 'current_balance' => 350000]);
+        }
+
         if ($user->wallets()->count() === 0) {
             Wallet::factory()->create(['user_id' => $user->id, 'name' => 'Cash', 'type' => 'cash', 'current_balance' => 500000]);
             Wallet::factory()->create(['user_id' => $user->id, 'name' => 'BCA', 'type' => 'bank', 'current_balance' => 25000000]);
