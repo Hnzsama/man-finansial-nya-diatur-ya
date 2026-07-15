@@ -22,8 +22,9 @@ Spesifikasi teknis, arsitektur, dan alur sistem didokumentasikan secara lengkap 
 
 ## 🚀 Tech Stack
 
-*   **Backend**: Laravel 13, PHP 8.3
+*   **Backend**: Laravel 13, PHP 8.5
 *   **Frontend**: React 19, Inertia.js v3
 *   **Styling**: Tailwind CSS v4, Radix UI
 *   **Database**: SQLite / MySQL
 *   **Testing**: Pest PHP
+# personal-finance

@@ -1,7 +1,7 @@
 # Application Architecture
 
 ## Stack
-- **Backend:** Laravel 13 (PHP 8.3+)
+- **Backend:** Laravel 13 (PHP 8.5+)
 - **Database:** SQLite (or MySQL/PostgreSQL)
 - **Frontend:** Laravel Inertia v3 with React 19 + Radix UI / Tailwind CSS v4
 - **Routing:** Laravel Wayfinder untuk Type-Safe Routing
