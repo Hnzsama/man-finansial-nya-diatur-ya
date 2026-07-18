@@ -3,7 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Category;
+use App\Models\Asset;
+use App\Models\Budget;
+use App\Models\Debt;
+use App\Models\Goal;
+use App\Models\Subscription;
 use App\Models\Transaction;
 use App\Models\Wallet;
 use Carbon\Carbon;
@@ -16,8 +20,10 @@ class DashboardApiController extends Controller
     {
         try {
             $user = $request->user();
-            $startOfMonth = Carbon::now()->startOfMonth()->toDateString();
-            $endOfMonth = Carbon::now()->endOfMonth()->toDateString();
+
+            // Read date filters from query
+            $startDate = $request->query('start_date', Carbon::now()->startOfMonth()->toDateString());
+            $endDate = $request->query('end_date', Carbon::now()->endOfMonth()->toDateString());
 
             // Total Balance
             $totalBalance = Wallet::where('user_id', $user->id)->sum('current_balance');
@@ -25,13 +31,13 @@ class DashboardApiController extends Controller
             // Wallets
             $wallets = Wallet::where('user_id', $user->id)->get();
 
-            // Income / Expense this month
-            $thisMonthTransactions = Transaction::where('user_id', $user->id)
-                ->whereBetween('date', [$startOfMonth, $endOfMonth])
+            // Income / Expense in date range
+            $rangeTransactions = Transaction::where('user_id', $user->id)
+                ->whereBetween('date', [$startDate, $endDate])
                 ->get();
 
-            $income = $thisMonthTransactions->where('type', 'income')->sum('amount');
-            $expense = $thisMonthTransactions->where('type', 'expense')->sum('amount');
+            $income = $rangeTransactions->where('type', 'income')->sum('amount');
+            $expense = $rangeTransactions->where('type', 'expense')->sum('amount');
 
             // Recent Transactions
             $recentTransactions = Transaction::with(['wallet', 'category'])
@@ -41,26 +47,38 @@ class DashboardApiController extends Controller
                 ->limit(5)
                 ->get();
 
-            // Budget Status
-            $categoriesWithBudget = Category::where('user_id', $user->id)
-                ->whereNotNull('budget_amount')
+            // Budget Status from budgets table
+            $budgets = Budget::with('category')
+                ->where('user_id', $user->id)
                 ->get();
 
             $budgetStatus = [];
-            foreach ($categoriesWithBudget as $category) {
+            foreach ($budgets as $budget) {
+                if (! $budget->category) {
+                    continue;
+                }
+
                 $spent = Transaction::where('user_id', $user->id)
-                    ->where('category_id', $category->id)
+                    ->where('category_id', $budget->category_id)
                     ->where('type', 'expense')
-                    ->whereBetween('date', [$startOfMonth, $endOfMonth])
+                    ->whereBetween('date', [$startDate, $endDate])
                     ->sum('amount');
 
                 $budgetStatus[] = [
-                    'category' => $category,
+                    'category' => $budget->category,
                     'spent' => (float) $spent,
-                    'budget' => (float) $category->budget_amount,
-                    'percentage' => $category->budget_amount > 0 ? round(($spent / $category->budget_amount) * 100, 1) : 0,
+                    'budget' => (float) $budget->amount_limit,
+                    'percentage' => $budget->amount_limit > 0 ? round(($spent / $budget->amount_limit) * 100, 1) : 0,
                 ];
             }
+
+            // Additional Summary Data
+            $totalAssetValue = Asset::where('user_id', $user->id)->sum('current_value');
+            $totalDebt = Debt::where('user_id', $user->id)->where('type', 'payable')->where('status', 'active')->sum('remaining_amount');
+            $totalReceivable = Debt::where('user_id', $user->id)->where('type', 'receivable')->where('status', 'active')->sum('remaining_amount');
+            $totalGoalTarget = Goal::where('user_id', $user->id)->sum('target_amount');
+            $totalGoalCurrent = Goal::where('user_id', $user->id)->sum('current_amount');
+            $activeSubscriptionsCount = Subscription::where('user_id', $user->id)->where('is_active', true)->count();
 
             return response()->json([
                 'total_balance' => (float) $totalBalance,
@@ -70,6 +88,12 @@ class DashboardApiController extends Controller
                 'wallets' => $wallets,
                 'recent_transactions' => $recentTransactions,
                 'budget_status' => $budgetStatus,
+                'total_asset_value' => (float) $totalAssetValue,
+                'total_debt' => (float) $totalDebt,
+                'total_receivable' => (float) $totalReceivable,
+                'total_goal_target' => (float) $totalGoalTarget,
+                'total_goal_current' => (float) $totalGoalCurrent,
+                'active_subscriptions_count' => (int) $activeSubscriptionsCount,
             ]);
         } catch (\Exception $e) {
             return response()->json(['message' => 'Failed to load dashboard data.'], 500);

@@ -6,6 +6,7 @@ import {
 } from '@tabler/icons-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { AmountInput } from '@/components/ui/amount-input';
 import { Label } from '@/components/ui/label';
 import {
   Select,
@@ -168,11 +169,10 @@ export function GoalSheet({ isOpen, onOpenChange, mode, goal, onSuccess }: GoalS
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="target-amount">Target Amount (IDR)</Label>
-              <Input
+              <AmountInput
                 id="target-amount"
-                type="number"
                 value={form.data.target_amount}
-                onChange={(e) => form.setData('target_amount', e.target.value)}
+                onChange={(val) => form.setData('target_amount', val)}
                 placeholder="0"
                 required
               />
@@ -181,11 +181,10 @@ export function GoalSheet({ isOpen, onOpenChange, mode, goal, onSuccess }: GoalS
 
             <div className="space-y-2">
               <Label htmlFor="current-amount">Initial Saved Amount (IDR)</Label>
-              <Input
+              <AmountInput
                 id="current-amount"
-                type="number"
                 value={form.data.current_amount}
-                onChange={(e) => form.setData('current_amount', e.target.value)}
+                onChange={(val) => form.setData('current_amount', val)}
                 placeholder="0"
                 required
               />

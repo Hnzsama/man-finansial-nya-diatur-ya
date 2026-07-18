@@ -207,11 +207,23 @@ class SubscriptionController extends Controller
                     ->lockForUpdate()
                     ->firstOrFail();
 
+                $categoryId = $subscription->category_id;
+                if (empty($categoryId)) {
+                    $categoryId = Category::firstOrCreate([
+                        'user_id' => $subscription->user_id,
+                        'name' => 'Langganan',
+                        'type' => 'expense',
+                    ], [
+                        'icon' => 'Repeat',
+                        'color' => '#6366F1',
+                    ])->id;
+                }
+
                 // Create the expense transaction
                 Transaction::create([
                     'user_id' => $subscription->user_id,
                     'wallet_id' => $wallet->id,
-                    'category_id' => $subscription->category_id,
+                    'category_id' => $categoryId,
                     'type' => 'expense',
                     'amount' => $subscription->amount,
                     'date' => Carbon::now()->format('Y-m-d'),

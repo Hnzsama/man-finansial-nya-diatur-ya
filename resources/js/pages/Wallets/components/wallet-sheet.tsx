@@ -1,6 +1,7 @@
 import React from 'react';
 import { useForm } from '@inertiajs/react';
 import { Input } from '@/components/ui/input';
+import { AmountInput } from '@/components/ui/amount-input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import {
@@ -124,13 +125,11 @@ export function WalletSheet({ isOpen, onOpenChange, mode, wallet, onSuccess }: W
 
                     <div className="space-y-2">
                         <Label htmlFor="opening_balance">Opening Balance</Label>
-                        <Input
+                        <AmountInput
                             id="opening_balance"
-                            type="number"
-                            step="0.01"
                             value={data.opening_balance}
-                            onChange={(e) => setData('opening_balance', e.target.value)}
-                            placeholder="0.00"
+                            onChange={(val) => setData('opening_balance', val)}
+                            placeholder="0"
                             required
                             disabled={mode === 'edit'}
                         />

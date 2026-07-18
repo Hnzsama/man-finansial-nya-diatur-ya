@@ -2,10 +2,16 @@ import React from 'react';
 import { useForm } from '@inertiajs/react';
 import {
   IconUser,
+  IconCalendar,
 } from '@tabler/icons-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { AmountInput } from '@/components/ui/amount-input';
 import { Label } from '@/components/ui/label';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
+import { format } from 'date-fns';
+import { cn } from '@/lib/utils';
 import {
   Select,
   SelectContent,
@@ -39,7 +45,7 @@ interface Debt {
 interface Wallet {
   id: number;
   name: string;
-  balance: number | string;
+  current_balance: number | string;
 }
 
 interface DebtSheetProps {
@@ -179,25 +185,53 @@ export function DebtSheet({
 
               <div className="space-y-2">
                 <Label htmlFor="add-amount">Amount (IDR)</Label>
-                <Input
+                <AmountInput
                   id="add-amount"
-                  type="number"
                   value={form.data.amount}
-                  onChange={(e) => form.setData('amount', e.target.value)}
-                  placeholder="e.g. 5000000"
+                  onChange={(val) => form.setData('amount', val)}
+                  placeholder="e.g. 5.000.000"
                   required
                 />
                 {form.errors.amount && <p className="text-xs text-destructive">{form.errors.amount}</p>}
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-2 flex flex-col">
                 <Label htmlFor="add-due-date">Due Date (Optional)</Label>
-                <Input
-                  id="add-due-date"
-                  type="date"
-                  value={form.data.due_date}
-                  onChange={(e) => form.setData('due_date', e.target.value)}
-                />
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      id="add-due-date"
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal bg-background border-input",
+                        !form.data.due_date && "text-muted-foreground"
+                      )}
+                    >
+                      <IconCalendar className="mr-2 h-4 w-4 shrink-0 opacity-70" />
+                      {form.data.due_date ? (
+                        format(new Date(form.data.due_date), "PPP")
+                      ) : (
+                        <span>Pick a date</span>
+                      )}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={form.data.due_date ? new Date(form.data.due_date) : undefined}
+                      onSelect={(date) => {
+                        if (date) {
+                          const year = date.getFullYear();
+                          const month = String(date.getMonth() + 1).padStart(2, '0');
+                          const day = String(date.getDate()).padStart(2, '0');
+                          form.setData('due_date', `${year}-${month}-${day}`);
+                        } else {
+                          form.setData('due_date', '');
+                        }
+                      }}
+                    />
+                  </PopoverContent>
+                </Popover>
                 {form.errors.due_date && <p className="text-xs text-destructive">{form.errors.due_date}</p>}
               </div>
 
@@ -244,7 +278,7 @@ export function DebtSheet({
                         <SelectContent>
                           {wallets.map((w) => (
                             <SelectItem key={w.id} value={w.id.toString()}>
-                              {w.name} ({formatCurrency(w.balance)})
+                              {w.name} ({formatCurrency(w.current_balance)})
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -271,14 +305,43 @@ export function DebtSheet({
                 {editForm.errors.counterparty_name && <p className="text-xs text-destructive">{editForm.errors.counterparty_name}</p>}
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-2 flex flex-col">
                 <Label htmlFor="edit-due-date">Due Date (Optional)</Label>
-                <Input
-                  id="edit-due-date"
-                  type="date"
-                  value={editForm.data.due_date}
-                  onChange={(e) => editForm.setData('due_date', e.target.value)}
-                />
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      id="edit-due-date"
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal bg-background border-input",
+                        !editForm.data.due_date && "text-muted-foreground"
+                      )}
+                    >
+                      <IconCalendar className="mr-2 h-4 w-4 shrink-0 opacity-70" />
+                      {editForm.data.due_date ? (
+                        format(new Date(editForm.data.due_date as string), "PPP")
+                      ) : (
+                        <span>Pick a date</span>
+                      )}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={editForm.data.due_date ? new Date(editForm.data.due_date as string) : undefined}
+                      onSelect={(date) => {
+                        if (date) {
+                          const year = date.getFullYear();
+                          const month = String(date.getMonth() + 1).padStart(2, '0');
+                          const day = String(date.getDate()).padStart(2, '0');
+                          editForm.setData('due_date', `${year}-${month}-${day}`);
+                        } else {
+                          editForm.setData('due_date', '');
+                        }
+                      }}
+                    />
+                  </PopoverContent>
+                </Popover>
                 {editForm.errors.due_date && <p className="text-xs text-destructive">{editForm.errors.due_date}</p>}
               </div>
 

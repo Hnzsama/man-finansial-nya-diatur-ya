@@ -13,7 +13,11 @@ class AssetApiController extends Controller
     public function index(Request $request): JsonResponse
     {
         try {
-            $assets = Asset::where('user_id', $request->user()->id)->get();
+            $assets = Asset::where('user_id', $request->user()->id)->get()->map(function ($asset) {
+                $asset->value = $asset->current_value;
+
+                return $asset;
+            });
 
             return response()->json($assets);
         } catch (\Exception $e) {
@@ -36,10 +40,12 @@ class AssetApiController extends Controller
                     'user_id' => $request->user()->id,
                     'name' => $validated['name'],
                     'type' => $validated['type'],
-                    'value' => $validated['value'],
+                    'current_value' => $validated['value'],
                     'notes' => $validated['notes'] ?? null,
                 ]);
             });
+
+            $asset->value = $asset->current_value;
 
             return response()->json($asset, 201);
         } catch (\Exception $e) {
@@ -52,6 +58,8 @@ class AssetApiController extends Controller
         if ($asset->user_id !== $request->user()->id) {
             return response()->json(['message' => 'Unauthorized.'], 403);
         }
+
+        $asset->value = $asset->current_value;
 
         return response()->json($asset);
     }
@@ -71,8 +79,15 @@ class AssetApiController extends Controller
 
         try {
             DB::transaction(function () use ($validated, $asset) {
-                $asset->update($validated);
+                $asset->update([
+                    'name' => $validated['name'],
+                    'type' => $validated['type'],
+                    'current_value' => $validated['value'],
+                    'notes' => $validated['notes'] ?? null,
+                ]);
             });
+
+            $asset->value = $asset->current_value;
 
             return response()->json($asset);
         } catch (\Exception $e) {

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Debt;
 use App\Models\Transaction;
 use App\Models\Wallet;
@@ -113,10 +114,32 @@ class DebtController extends Controller
                     $txType = $validated['type'] === 'payable' ? 'income' : 'expense';
                     $txNotes = ($validated['type'] === 'payable' ? 'Pinjaman dari ' : 'Pinjaman kepada ').$validated['counterparty_name'];
 
+                    $categoryId = null;
+                    if ($validated['type'] === 'payable') {
+                        $categoryId = Category::firstOrCreate([
+                            'user_id' => $user->id,
+                            'name' => 'Pinjaman / Hutang',
+                            'type' => 'income',
+                        ], [
+                            'icon' => 'ArrowDownLeft',
+                            'color' => '#10B981',
+                        ])->id;
+                    } else {
+                        $categoryId = Category::firstOrCreate([
+                            'user_id' => $user->id,
+                            'name' => 'Piutang / Pinjaman',
+                            'type' => 'expense',
+                        ], [
+                            'icon' => 'ArrowUpRight',
+                            'color' => '#EF4444',
+                        ])->id;
+                    }
+
                     Transaction::create([
                         'user_id' => $user->id,
                         'wallet_id' => $wallet->id,
                         'debt_id' => $debt->id,
+                        'category_id' => $categoryId,
                         'type' => $txType,
                         'amount' => $validated['amount'],
                         'date' => Carbon::now()->format('Y-m-d'),
@@ -244,11 +267,33 @@ class DebtController extends Controller
                     .$lockedDebt->counterparty_name
                     .(! empty($validated['notes']) ? ' ('.$validated['notes'].')' : '');
 
+                $categoryId = null;
+                if ($lockedDebt->type === 'payable') {
+                    $categoryId = Category::firstOrCreate([
+                        'user_id' => $user->id,
+                        'name' => 'Bayar Hutang',
+                        'type' => 'expense',
+                    ], [
+                        'icon' => 'ArrowUpRight',
+                        'color' => '#EF4444',
+                    ])->id;
+                } else {
+                    $categoryId = Category::firstOrCreate([
+                        'user_id' => $user->id,
+                        'name' => 'Penerimaan Piutang',
+                        'type' => 'income',
+                    ], [
+                        'icon' => 'ArrowDownLeft',
+                        'color' => '#10B981',
+                    ])->id;
+                }
+
                 // Create the Transaction
                 Transaction::create([
                     'user_id' => $user->id,
                     'wallet_id' => $wallet->id,
                     'debt_id' => $lockedDebt->id,
+                    'category_id' => $categoryId,
                     'type' => $txType,
                     'amount' => $paymentAmount,
                     'date' => $validated['date'],

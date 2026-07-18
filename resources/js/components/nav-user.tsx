@@ -115,9 +115,14 @@ export function NavUser() {
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
-              <Link href={logout.url()} method="post" as="button" className="w-full">
-                <IconLogout />
-                Log out
+              <Link
+                href={logout.url()}
+                method="post"
+                as="button"
+                className="flex w-full items-center gap-2 cursor-pointer"
+              >
+                <IconLogout className="size-4" />
+                <span>Log out</span>
               </Link>
             </DropdownMenuItem>
           </DropdownMenuContent>

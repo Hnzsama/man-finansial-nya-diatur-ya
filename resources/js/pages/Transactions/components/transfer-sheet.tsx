@@ -3,6 +3,7 @@ import { useForm } from '@inertiajs/react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { AmountInput } from '@/components/ui/amount-input';
 import { Label } from '@/components/ui/label';
 import {
   Select,
@@ -138,12 +139,11 @@ export function TransferSheet({
 
           <div className="space-y-2">
             <Label htmlFor="transfer-amount">Amount (IDR)</Label>
-            <Input
+            <AmountInput
               id="transfer-amount"
-              type="number"
               value={form.data.amount}
-              onChange={(e) => form.setData('amount', e.target.value)}
-              placeholder="e.g. 500000"
+              onChange={(val) => form.setData('amount', val)}
+              placeholder="e.g. 500.000"
               required
             />
             {form.errors.amount && <p className="text-xs text-destructive">{form.errors.amount}</p>}

@@ -3,6 +3,7 @@ import { useForm } from '@inertiajs/react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { AmountInput } from '@/components/ui/amount-input';
 import { Label } from '@/components/ui/label';
 import {
   Select,
@@ -133,12 +134,11 @@ export function AssetSheet({
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="asset-value">Current Value (IDR)</Label>
-              <Input
+              <AmountInput
                 id="asset-value"
-                type="number"
                 value={form.data.current_value}
-                onChange={(e) => form.setData('current_value', e.target.value)}
-                placeholder="e.g. 10000000"
+                onChange={(val) => form.setData('current_value', val)}
+                placeholder="e.g. 10.000.000"
                 required
               />
               {form.errors.current_value && <p className="text-xs text-destructive">{form.errors.current_value}</p>}

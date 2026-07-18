@@ -25,7 +25,7 @@ class DebtApiController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'type' => ['required', 'in:debt,receivable'],
+            'type' => ['required', 'in:debt,payable,receivable'],
             'amount' => ['required', 'numeric', 'min:0.01'],
             'due_date' => ['nullable', 'date'],
             'notes' => ['nullable', 'string'],
@@ -35,19 +35,19 @@ class DebtApiController extends Controller
             $debt = DB::transaction(function () use ($validated, $request) {
                 return Debt::create([
                     'user_id' => $request->user()->id,
-                    'name' => $validated['name'],
-                    'type' => $validated['type'],
+                    'counterparty_name' => $validated['name'],
+                    'type' => $validated['type'] === 'debt' ? 'payable' : $validated['type'],
                     'amount' => $validated['amount'],
-                    'paid_amount' => 0,
                     'remaining_amount' => $validated['amount'],
                     'due_date' => $validated['due_date'] ?? null,
                     'notes' => $validated['notes'] ?? null,
+                    'status' => 'active',
                 ]);
             });
 
             return response()->json($debt, 201);
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Failed to create debt.'], 500);
+            return response()->json(['message' => 'Failed to create debt: '.$e->getMessage()], 500);
         }
     }
 
@@ -68,7 +68,7 @@ class DebtApiController extends Controller
 
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'type' => ['required', 'in:debt,receivable'],
+            'type' => ['required', 'in:debt,payable,receivable'],
             'amount' => ['required', 'numeric', 'min:0.01'],
             'paid_amount' => ['required', 'numeric', 'min:0'],
             'due_date' => ['nullable', 'date'],
@@ -79,20 +79,19 @@ class DebtApiController extends Controller
             DB::transaction(function () use ($validated, $debt) {
                 $remaining = max(0, $validated['amount'] - $validated['paid_amount']);
                 $debt->update([
-                    'name' => $validated['name'],
-                    'type' => $validated['type'],
+                    'counterparty_name' => $validated['name'],
+                    'type' => $validated['type'] === 'debt' ? 'payable' : $validated['type'],
                     'amount' => $validated['amount'],
-                    'paid_amount' => $validated['paid_amount'],
                     'remaining_amount' => $remaining,
                     'due_date' => $validated['due_date'],
                     'notes' => $validated['notes'],
-                    'is_settled' => $remaining <= 0,
+                    'status' => $remaining <= 0 ? 'paid_off' : 'active',
                 ]);
             });
 
             return response()->json($debt);
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Failed to update debt.'], 500);
+            return response()->json(['message' => 'Failed to update debt: '.$e->getMessage()], 500);
         }
     }
 

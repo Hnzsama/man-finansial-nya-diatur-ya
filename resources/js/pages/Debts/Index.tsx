@@ -56,7 +56,7 @@ interface Debt {
 interface Wallet {
   id: number;
   name: string;
-  balance: number | string;
+  current_balance: number | string;
 }
 
 interface PageProps {
@@ -150,7 +150,7 @@ export default function DebtsIndex({ debts, stats, wallets }: PageProps) {
           return (
             <Card
               key={debt.id}
-              className="group relative overflow-hidden rounded-xl border border-border/40 bg-card hover:bg-card/90 transition-all duration-300 hover:shadow-lg hover:shadow-[var(--shadow-color)] hover:-translate-y-0.5"
+              className="group relative overflow-hidden rounded-xl border border-border/40 bg-card hover:bg-card/90 transition-all duration-300 hover:shadow-lg hover:shadow-[var(--shadow-color)] hover:-translate-y-0.5 flex flex-col h-full"
               style={{ '--shadow-color': `${themeColor}15` } as React.CSSProperties}
             >
               {/* Ambient Background Glow */}
@@ -159,23 +159,25 @@ export default function DebtsIndex({ debts, stats, wallets }: PageProps) {
                 style={{ backgroundColor: themeColor }}
               />
 
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <span className="font-bold text-base tracking-tight">{debt.counterparty_name}</span>
-                    <Badge variant="outline" className="capitalize text-[10px] px-1.5 py-0">
+              <CardHeader className="flex flex-row items-start justify-between pb-2 gap-4">
+                <div className="space-y-1 flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="font-bold text-base tracking-tight truncate max-w-full block" title={debt.counterparty_name}>
+                      {debt.counterparty_name}
+                    </span>
+                    <Badge variant="outline" className="capitalize text-[10px] px-1.5 py-0 shrink-0">
                       {debt.type}
                     </Badge>
                   </div>
                   <CardDescription className="text-xs flex items-center gap-1">
-                    <IconCalendar className="h-3.5 w-3.5" />
-                    Due Date: {formatDate(debt.due_date)}
+                    <IconCalendar className="h-3.5 w-3.5 shrink-0" />
+                    <span className="truncate">Due Date: {formatDate(debt.due_date)}</span>
                   </CardDescription>
                 </div>
 
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:bg-muted/85">
+                    <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:bg-muted/85 shrink-0">
                       <IconDotsVertical className="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
@@ -187,9 +189,9 @@ export default function DebtsIndex({ debts, stats, wallets }: PageProps) {
                 </DropdownMenu>
               </CardHeader>
 
-              <CardContent className="pt-2 pb-4 space-y-4">
+              <CardContent className="pt-2 pb-4 space-y-4 flex-1 flex flex-col justify-between">
                 {/* Progress bar */}
-                <div className="space-y-1.5">
+                <div className="space-y-1.5 w-full">
                   <div className="flex justify-between text-xs font-medium">
                     <span className="text-muted-foreground">Paid Percentage</span>
                     <span style={{ color: themeColor }}>{debt.progress}%</span>
@@ -207,16 +209,16 @@ export default function DebtsIndex({ debts, stats, wallets }: PageProps) {
                 </div>
 
                 {/* Amount details */}
-                <div className="grid grid-cols-2 gap-4 pt-1">
-                  <div>
-                    <span className="text-xs text-muted-foreground block">Remaining</span>
-                    <span className="text-sm font-semibold tabular-nums text-foreground/95">
+                <div className="flex flex-row justify-between items-center gap-2 flex-wrap pt-1 w-full text-xs">
+                  <div className="min-w-0 flex-1">
+                    <span className="text-muted-foreground block text-[10px]">Remaining</span>
+                    <span className="text-sm font-semibold tabular-nums text-foreground/95 truncate block">
                       {formatCurrency(debt.remaining_amount)}
                     </span>
                   </div>
-                  <div className="text-right">
-                    <span className="text-xs text-muted-foreground block">Initial Total</span>
-                    <span className="text-sm font-semibold tabular-nums">
+                  <div className="text-right min-w-0 flex-1">
+                    <span className="text-muted-foreground block text-[10px]">Initial Total</span>
+                    <span className="text-sm font-semibold tabular-nums truncate block">
                       {formatCurrency(debt.amount)}
                     </span>
                   </div>
@@ -224,7 +226,7 @@ export default function DebtsIndex({ debts, stats, wallets }: PageProps) {
 
                 {/* Notes if exist */}
                 {debt.notes && (
-                  <div className="text-xs p-2.5 rounded-lg bg-muted/20 border border-border/20 text-muted-foreground flex gap-1.5 items-start">
+                  <div className="text-xs p-2.5 rounded-lg bg-muted/20 border border-border/20 text-muted-foreground flex gap-1.5 items-start w-full">
                     <IconFileText className="h-4 w-4 mt-0.5 shrink-0" />
                     <span className="line-clamp-2">{debt.notes}</span>
                   </div>
@@ -232,33 +234,33 @@ export default function DebtsIndex({ debts, stats, wallets }: PageProps) {
               </CardContent>
 
               {!isSettled && (
-                <CardFooter className="bg-muted/10 border-t border-border/30 py-3 text-xs flex justify-between items-center">
+                <CardFooter className="bg-muted/10 border-t border-border/30 py-3 text-xs flex flex-row flex-wrap gap-2 justify-between items-center">
                   {isOverdue ? (
-                    <Badge variant="destructive" className="font-semibold gap-1 text-[10px] py-0.5">
+                    <Badge variant="destructive" className="font-semibold gap-1 text-[10px] py-0.5 shrink-0">
                       <IconAlertTriangle className="h-3 w-3" /> Overdue
                     </Badge>
                   ) : (
-                    <span className="text-muted-foreground/60">Active</span>
+                    <span className="text-muted-foreground/60 shrink-0">Active</span>
                   )}
                   
                   <Button
                     size="sm"
                     onClick={() => openPaymentSheet(debt)}
-                    className="h-8 text-xs font-medium gap-1"
+                    className="h-8 text-xs font-medium gap-1 shrink-0"
                     style={{ backgroundColor: themeColor, color: '#fff' }}
                   >
                     <IconCoins className="h-3.5 w-3.5" />
-                    {isPayable ? 'Pay Installment' : 'Receive Installment'}
+                    {isPayable ? 'Pay' : 'Receive'}
                   </Button>
                 </CardFooter>
               )}
 
               {isSettled && (
-                <CardFooter className="bg-muted/10 border-t border-border/30 py-3 text-xs flex justify-between items-center text-muted-foreground">
-                  <span className="flex items-center gap-1 text-green-500 font-semibold">
+                <CardFooter className="bg-muted/10 border-t border-border/30 py-3 text-xs flex flex-row flex-wrap gap-2 justify-between items-center text-muted-foreground">
+                  <span className="flex items-center gap-1 text-green-500 font-semibold shrink-0">
                     <IconCheck className="h-4 w-4" /> Settled / Paid Off
                   </span>
-                  <span className="text-xs text-muted-foreground/60 capitalize">
+                  <span className="text-xs text-muted-foreground/60 capitalize shrink-0">
                     {debt.status.replace('_', ' ')}
                   </span>
                 </CardFooter>

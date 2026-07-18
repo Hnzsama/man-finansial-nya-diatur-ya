@@ -2,7 +2,13 @@ import React from 'react';
 import { useForm } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { AmountInput } from '@/components/ui/amount-input';
 import { Label } from '@/components/ui/label';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
+import { format } from 'date-fns';
+import { cn } from '@/lib/utils';
+import { IconCalendar } from '@tabler/icons-react';
 import {
   Select,
   SelectContent,
@@ -36,7 +42,7 @@ interface Debt {
 interface Wallet {
   id: number;
   name: string;
-  balance: number | string;
+  current_balance: number | string;
 }
 
 interface RepaymentSheetProps {
@@ -56,6 +62,8 @@ export function RepaymentSheet({
   formatCurrency,
   onSuccess,
 }: RepaymentSheetProps) {
+  const [paymentType, setPaymentType] = React.useState<'full' | 'installment'>('full');
+
   const form = useForm({
     amount: '',
     wallet_id: wallets[0]?.id?.toString() || '',
@@ -65,14 +73,24 @@ export function RepaymentSheet({
 
   React.useEffect(() => {
     if (isOpen) {
+      setPaymentType('full');
       form.setData({
-        amount: '',
+        amount: debt ? debt.remaining_amount.toString() : '',
         wallet_id: wallets[0]?.id?.toString() || '',
         date: new Date().toISOString().split('T')[0],
         notes: '',
       });
     }
-  }, [isOpen]);
+  }, [isOpen, debt]);
+
+  const handlePaymentTypeChange = (type: 'full' | 'installment') => {
+    setPaymentType(type);
+    if (type === 'full') {
+      form.setData('amount', debt ? debt.remaining_amount.toString() : '');
+    } else {
+      form.setData('amount', '');
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -88,6 +106,10 @@ export function RepaymentSheet({
     });
   };
 
+  const remainingShortage = debt
+    ? Math.max(0, Number(debt.remaining_amount) - Number(form.data.amount || 0))
+    : 0;
+
   return (
     <Sheet open={isOpen} onOpenChange={onOpenChange}>
       <SheetContent className="p-6 sm:max-w-md overflow-y-auto">
@@ -102,18 +124,66 @@ export function RepaymentSheet({
         </SheetHeader>
         <form onSubmit={handleSubmit} className="space-y-4 mt-6">
           <div className="space-y-2">
-            <Label htmlFor="pay-amount">Payment Amount (IDR)</Label>
-            <Input
+            <Label>Cara Pembayaran</Label>
+            <div className="grid grid-cols-2 gap-2 bg-muted p-1 rounded-lg">
+              <button
+                type="button"
+                className={`py-1.5 text-xs font-medium rounded-md transition-all cursor-pointer ${
+                  paymentType === 'full'
+                    ? 'bg-background text-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+                onClick={() => handlePaymentTypeChange('full')}
+              >
+                Bayar Lunas
+              </button>
+              <button
+                type="button"
+                className={`py-1.5 text-xs font-medium rounded-md transition-all cursor-pointer ${
+                  paymentType === 'installment'
+                    ? 'bg-background text-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+                onClick={() => handlePaymentTypeChange('installment')}
+              >
+                Cicil
+              </button>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="pay-amount">Jumlah Pembayaran (IDR)</Label>
+            <AmountInput
               id="pay-amount"
-              type="number"
-              max={debt ? Number(debt.remaining_amount) : undefined}
               value={form.data.amount}
-              onChange={(e) => form.setData('amount', e.target.value)}
-              placeholder="e.g. 500000"
+              onChange={(val) => form.setData('amount', val)}
+              placeholder="e.g. 500.000"
               required
+              disabled={paymentType === 'full'}
             />
             {form.errors.amount && <p className="text-xs text-destructive">{form.errors.amount}</p>}
           </div>
+
+          {debt && (
+            <div className="p-3 rounded-lg bg-muted/40 border border-border/40 text-xs space-y-1">
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Total Utang:</span>
+                <span className="font-semibold">{formatCurrency(debt.remaining_amount)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Pembayaran Ini:</span>
+                <span className="font-semibold text-emerald-500">
+                  -{formatCurrency(form.data.amount || 0)}
+                </span>
+              </div>
+              <div className="border-t border-border/30 my-1 pt-1 flex justify-between font-medium">
+                <span className="text-muted-foreground">Kekurangan:</span>
+                <span className={remainingShortage > 0 ? "text-orange-500 font-bold" : "text-emerald-500 font-bold"}>
+                  {formatCurrency(remainingShortage)}
+                </span>
+              </div>
+            </div>
+          )}
 
           <div className="space-y-2">
             <Label htmlFor="pay-wallet-id">Transaction Wallet</Label>
@@ -127,7 +197,7 @@ export function RepaymentSheet({
               <SelectContent>
                 {wallets.map((w) => (
                   <SelectItem key={w.id} value={w.id.toString()}>
-                    {w.name} ({formatCurrency(w.balance)})
+                    {w.name} ({formatCurrency(w.current_balance)})
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -135,15 +205,43 @@ export function RepaymentSheet({
             {form.errors.wallet_id && <p className="text-xs text-destructive">{form.errors.wallet_id}</p>}
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-2 flex flex-col">
             <Label htmlFor="pay-date">Transaction Date</Label>
-            <Input
-              id="pay-date"
-              type="date"
-              value={form.data.date}
-              onChange={(e) => form.setData('date', e.target.value)}
-              required
-            />
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  id="pay-date"
+                  variant="outline"
+                  className={cn(
+                    "w-full justify-start text-left font-normal bg-background border-input",
+                    !form.data.date && "text-muted-foreground"
+                  )}
+                >
+                  <IconCalendar className="mr-2 h-4 w-4 shrink-0 opacity-70" />
+                  {form.data.date ? (
+                    format(new Date(form.data.date), "PPP")
+                  ) : (
+                    <span>Pick a date</span>
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={form.data.date ? new Date(form.data.date) : undefined}
+                  onSelect={(date) => {
+                    if (date) {
+                      const year = date.getFullYear();
+                      const month = String(date.getMonth() + 1).padStart(2, '0');
+                      const day = String(date.getDate()).padStart(2, '0');
+                      form.setData('date', `${year}-${month}-${day}`);
+                    } else {
+                      form.setData('date', '');
+                    }
+                  }}
+                />
+              </PopoverContent>
+            </Popover>
             {form.errors.date && <p className="text-xs text-destructive">{form.errors.date}</p>}
           </div>
 
@@ -168,3 +266,4 @@ export function RepaymentSheet({
     </Sheet>
   );
 }
+

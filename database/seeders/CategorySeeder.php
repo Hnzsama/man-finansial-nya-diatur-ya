@@ -10,14 +10,14 @@ class CategorySeeder extends Seeder
 {
     public function run(): void
     {
-        $user = User::first();
+        $user = User::query()->where('email', 'hnzsama@gmail.com')->first();
 
-        if (! $user) {
-            $user = User::factory()->create([
-                'name' => 'Test User',
-                'email' => 'test@example.com',
-            ]);
-        }
+        // if (! $user) {
+        //     $user = User::factory()->create([
+        //         'name' => 'Test User',
+        //         'email' => 'test@example.com',
+        //     ]);
+        // }
 
         $incomeCategories = [
             ['name' => 'Salary', 'icon' => 'Briefcase', 'color' => '#10B981'],

@@ -1,20 +1,30 @@
 import { Link, usePage } from '@inertiajs/react';
-import { IconCirclePlusFilled, IconMail } from "@tabler/icons-react"
+import { IconCirclePlusFilled, IconMail, IconChevronRight, IconDots } from "@tabler/icons-react"
 
 import { Button } from "@/components/ui/button"
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible"
 import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
 } from "@/components/ui/sidebar"
 import type { NavItem } from '@/types';
 
 export function NavMain({
   items,
+  moreItems = [],
 }: {
   items: NavItem[]
+  moreItems?: NavItem[]
 }) {
   const page = usePage();
   
@@ -23,14 +33,14 @@ export function NavMain({
         const itemUrl = new URL(href as string, window.location.origin);
         const currentPath = page.url.split('?')[0];
 
-        // Special case for dashboard which is '/' or '/dashboard', 
-        // but let's just do exact matching on pathname for now
         return itemUrl.pathname === currentPath || 
               (currentPath === '/' && itemUrl.pathname === '/dashboard');
     } catch {
         return false;
     }
   };
+
+  const isMoreActive = moreItems.some(item => checkIsActive(item.href));
 
   return (
     <SidebarGroup>
@@ -65,8 +75,37 @@ export function NavMain({
               </SidebarMenuButton>
             </SidebarMenuItem>
           ))}
+
+          {moreItems.length > 0 && (
+            <Collapsible asChild defaultOpen={isMoreActive} className="group/collapsible">
+              <SidebarMenuItem>
+                <CollapsibleTrigger asChild>
+                  <SidebarMenuButton tooltip="More Features" isActive={isMoreActive}>
+                    <IconDots className="size-4" />
+                    <span>More</span>
+                    <IconChevronRight className="ml-auto size-4 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                  </SidebarMenuButton>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <SidebarMenuSub>
+                    {moreItems.map((item) => (
+                      <SidebarMenuSubItem key={item.title}>
+                        <SidebarMenuSubButton asChild isActive={checkIsActive(item.href)}>
+                          <Link href={item.href} prefetch className="flex items-center gap-2">
+                            {item.icon && <item.icon className="size-4" />}
+                            <span>{item.title}</span>
+                          </Link>
+                        </SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
+                    ))}
+                  </SidebarMenuSub>
+                </CollapsibleContent>
+              </SidebarMenuItem>
+            </Collapsible>
+          )}
         </SidebarMenu>
       </SidebarGroupContent>
     </SidebarGroup>
   )
 }
+

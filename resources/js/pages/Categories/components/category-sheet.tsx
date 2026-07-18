@@ -8,6 +8,7 @@ import {
 } from '@tabler/icons-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { AmountInput } from '@/components/ui/amount-input';
 import { Label } from '@/components/ui/label';
 import {
   Select,
@@ -194,12 +195,11 @@ export function CategorySheet({ isOpen, onOpenChange, mode, category, onSuccess 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="amount-limit">Monthly Limit (IDR)</Label>
-                  <Input
+                  <AmountInput
                     id="amount-limit"
-                    type="number"
                     value={form.data.amount_limit}
-                    onChange={(e) => form.setData('amount_limit', e.target.value)}
-                    placeholder={mode === 'edit' ? 'No budget limit' : 'e.g. 1000000'}
+                    onChange={(val) => form.setData('amount_limit', val)}
+                    placeholder={mode === 'edit' ? 'No budget limit' : 'e.g. 1.000.000'}
                   />
                   {form.errors.amount_limit && <p className="text-xs text-destructive">{form.errors.amount_limit}</p>}
                 </div>

@@ -7,6 +7,7 @@ import { IconCheck, IconChevronDown } from '@tabler/icons-react';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Input } from '@/components/ui/input';
+import { AmountInput } from '@/components/ui/amount-input';
 import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -157,15 +158,13 @@ export function TransactionSheet({
                     <div className="space-y-2">
                         <Label htmlFor="amount">Amount</Label>
                         <div className="relative">
-                            <span className="absolute left-3 top-2.5 text-muted-foreground">$</span>
-                            <Input
+                            <span className="absolute left-3 top-2.5 text-muted-foreground text-sm font-medium">Rp</span>
+                            <AmountInput
                                 id="amount"
-                                type="number"
-                                step="0.01"
-                                className="pl-7"
+                                className="pl-9"
                                 value={data.amount}
-                                onChange={(e) => setData('amount', e.target.value)}
-                                placeholder="0.00"
+                                onChange={(val) => setData('amount', val)}
+                                placeholder="0"
                                 required
                             />
                         </div>

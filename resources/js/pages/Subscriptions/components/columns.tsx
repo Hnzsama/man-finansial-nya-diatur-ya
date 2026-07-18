@@ -145,7 +145,7 @@ export const getColumns = (
         <button
           onClick={handleToggle}
           type="button"
-          className={`cursor-pointer inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold border transition-colors ${active ? 'bg-green-100 dark:bg-green-950/30 text-green-700 dark:text-green-400 border-green-200' : 'bg-muted text-muted-foreground border-border'}`}
+          className={`cursor-pointer inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold border transition-colors ${active ? 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800/30' : 'bg-muted text-muted-foreground border-border'}`}
         >
           {active ? 'Active' : 'Paused'}
         </button>

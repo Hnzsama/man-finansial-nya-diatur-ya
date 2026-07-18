@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AssetApiController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\CalendarApiController;
 use App\Http\Controllers\Api\CategoryApiController;
 use App\Http\Controllers\Api\DashboardApiController;
 use App\Http\Controllers\Api\DebtApiController;
@@ -21,6 +22,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Dashboard summary
     Route::get('/dashboard', DashboardApiController::class);
+
+    // Calendar API
+    Route::get('/calendar', [CalendarApiController::class, 'index']);
 
     // Resources
     Route::apiResource('wallets', WalletApiController::class);
