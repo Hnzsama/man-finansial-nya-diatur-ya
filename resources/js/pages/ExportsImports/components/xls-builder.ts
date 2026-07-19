@@ -33,8 +33,9 @@ export function buildXlsXml(
   rows: XlsRow[],
 ): string {
   const now = new Date().toLocaleDateString('en-CA');
-  const totalIncome = rows.filter(r => r.type === 'income').reduce((s, r) => s + r.amount, 0);
-  const totalExpense = rows.filter(r => r.type === 'expense').reduce((s, r) => s + r.amount, 0);
+  const nonTransferRows = rows.filter(r => r.category !== 'Transfer Fund');
+  const totalIncome = nonTransferRows.filter(r => r.type === 'income').reduce((s, r) => s + r.amount, 0);
+  const totalExpense = nonTransferRows.filter(r => r.type === 'expense').reduce((s, r) => s + r.amount, 0);
   const netCash = totalIncome - totalExpense;
 
   const transactionRows = rows

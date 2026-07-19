@@ -28,8 +28,9 @@ export function buildHtmlReport(
   const orientation = options.orientation || 'portrait';
 
   const now = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-  const totalIncome = rows.filter(r => r.type === 'income').reduce((s, r) => s + r.amount, 0);
-  const totalExpense = rows.filter(r => r.type === 'expense').reduce((s, r) => s + r.amount, 0);
+  const nonTransferRows = rows.filter(r => r.category !== 'Transfer Fund');
+  const totalIncome = nonTransferRows.filter(r => r.type === 'income').reduce((s, r) => s + r.amount, 0);
+  const totalExpense = nonTransferRows.filter(r => r.type === 'expense').reduce((s, r) => s + r.amount, 0);
   const netCash = totalIncome - totalExpense;
   const fmt = (n: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(n);
 
