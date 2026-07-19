@@ -173,7 +173,7 @@ export function TransactionSheet({
 
                     <div className="space-y-2 flex flex-col">
                         <Label htmlFor="wallet">Wallet</Label>
-                        <Popover open={isWalletOpen} onOpenChange={setIsWalletOpen}>
+                        <Popover open={isWalletOpen} onOpenChange={setIsWalletOpen} modal={false}>
                             <PopoverTrigger asChild>
                                 <Button
                                     variant="outline"
@@ -193,7 +193,12 @@ export function TransactionSheet({
                                         className="h-8 text-xs"
                                     />
                                 </div>
-                                <div className="max-h-[200px] overflow-y-auto overscroll-contain p-1 space-y-0.5" style={{ touchAction: 'pan-y' }}>
+                                <div
+                                    className="max-h-[200px] overflow-y-scroll overscroll-contain p-1 space-y-0.5"
+                                    style={{ WebkitOverflowScrolling: 'touch', touchAction: 'pan-y' }}
+                                    onTouchStart={(e) => e.stopPropagation()}
+                                    onTouchMove={(e) => e.stopPropagation()}
+                                >
                                     {filteredWallets.length === 0 ? (
                                         <div className="text-xs text-muted-foreground text-center py-4">No wallet found.</div>
                                     ) : (
@@ -226,7 +231,7 @@ export function TransactionSheet({
 
                     <div className="space-y-2 flex flex-col">
                         <Label htmlFor="category">Category</Label>
-                        <Popover open={isCategoryOpen} onOpenChange={setIsCategoryOpen}>
+                        <Popover open={isCategoryOpen} onOpenChange={setIsCategoryOpen} modal={false}>
                             <PopoverTrigger asChild>
                                 <Button
                                     variant="outline"
@@ -253,7 +258,12 @@ export function TransactionSheet({
                                         className="h-8 text-xs"
                                     />
                                 </div>
-                                <div className="max-h-[200px] overflow-y-auto overscroll-contain p-1 space-y-0.5" style={{ touchAction: 'pan-y' }}>
+                                <div
+                                    className="max-h-[200px] overflow-y-scroll overscroll-contain p-1 space-y-0.5"
+                                    style={{ WebkitOverflowScrolling: 'touch', touchAction: 'pan-y' }}
+                                    onTouchStart={(e) => e.stopPropagation()}
+                                    onTouchMove={(e) => e.stopPropagation()}
+                                >
                                     {filteredCategories.length === 0 ? (
                                         <div className="text-xs text-muted-foreground text-center py-4">No category found.</div>
                                     ) : (
