@@ -54,7 +54,7 @@ export function TransferSheet({
     from_wallet_id: '',
     to_wallet_id: '',
     amount: '',
-    date: new Date().toISOString().split('T')[0],
+    date: new Date().toLocaleDateString('en-CA'),
     notes: '',
   });
 
@@ -66,7 +66,7 @@ export function TransferSheet({
           from_wallet_id: wallets[0].id.toString(),
           to_wallet_id: wallets[1] ? wallets[1].id.toString() : '',
           amount: '',
-          date: new Date().toISOString().split('T')[0],
+          date: new Date().toLocaleDateString('en-CA'),
           notes: '',
         });
       }

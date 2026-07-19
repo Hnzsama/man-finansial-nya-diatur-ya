@@ -59,7 +59,7 @@ export function TransactionSheet({
         category_id: transaction?.category_id?.toString() || '',
         type: transaction?.type || 'expense',
         amount: transaction?.amount || '',
-        date: transaction ? transaction.date.split(/[ T]/)[0] : new Date().toISOString().split('T')[0],
+        date: transaction ? transaction.date.split(/[ T]/)[0] : new Date().toLocaleDateString('en-CA'),
         notes: transaction?.notes || '',
     });
 
@@ -100,7 +100,7 @@ export function TransactionSheet({
                 });
             } else if (mode === 'add') {
                 reset();
-                setData('date', new Date().toISOString().split('T')[0]);
+                setData('date', new Date().toLocaleDateString('en-CA'));
             }
         }
     }, [isOpen, transaction, mode]);
@@ -193,7 +193,7 @@ export function TransactionSheet({
                                         className="h-8 text-xs"
                                     />
                                 </div>
-                                <div className="max-h-[200px] overflow-y-auto p-1 space-y-0.5">
+                                <div className="max-h-[200px] overflow-y-auto overscroll-contain p-1 space-y-0.5" style={{ touchAction: 'pan-y' }}>
                                     {filteredWallets.length === 0 ? (
                                         <div className="text-xs text-muted-foreground text-center py-4">No wallet found.</div>
                                     ) : (
@@ -253,7 +253,7 @@ export function TransactionSheet({
                                         className="h-8 text-xs"
                                     />
                                 </div>
-                                <div className="max-h-[200px] overflow-y-auto p-1 space-y-0.5">
+                                <div className="max-h-[200px] overflow-y-auto overscroll-contain p-1 space-y-0.5" style={{ touchAction: 'pan-y' }}>
                                     {filteredCategories.length === 0 ? (
                                         <div className="text-xs text-muted-foreground text-center py-4">No category found.</div>
                                     ) : (
