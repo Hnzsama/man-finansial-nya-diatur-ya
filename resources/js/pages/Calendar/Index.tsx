@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Head } from '@inertiajs/react';
-import { IconChevronLeft, IconChevronRight, IconArrowUpRight, IconArrowDownLeft, IconTarget, IconCoins, IconRepeat } from '@tabler/icons-react';
+import { IconChevronLeft, IconChevronRight, IconArrowUpRight, IconArrowDownLeft, IconTarget, IconCoins, IconRepeat, IconArrowsRightLeft } from '@tabler/icons-react';
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/app-layout';
 import type { BreadcrumbItem } from '@/types';
@@ -166,8 +166,21 @@ export default function CalendarIndex({
     };
 
     transactions.forEach((tx) => {
-      // Skip Transfer Fund entries — internal wallet movements, not real income/expense
-      if (tx.category?.name === 'Transfer Fund') return;
+      if (tx.category?.name === 'Transfer Fund') {
+        // Include transfer fund in the drawer view but mark as 'transfer' type
+        // so it's visible without affecting income/expense summary figures
+        addEvent(tx.date, {
+          id: tx.id,
+          type: 'transfer',
+          title: tx.notes || 'Transfer Fund',
+          amount: typeof tx.amount === 'string' ? parseFloat(tx.amount) : tx.amount,
+          subtitle: `${tx.wallet?.name || 'Wallet'} • Internal Transfer`,
+          notes: tx.notes,
+          categoryName: 'Transfer Fund',
+          isTransfer: true,
+        });
+        return;
+      }
 
       addEvent(tx.date, {
         id: tx.id,
@@ -319,6 +332,7 @@ export default function CalendarIndex({
                                        evt.type === 'expense' ? IconArrowUpRight :
                                        evt.type === 'goal' ? IconTarget :
                                        evt.type === 'subscription' ? IconRepeat :
+                                       evt.type === 'transfer' ? IconArrowsRightLeft :
                                        IconCoins;
 
                           return (
@@ -331,6 +345,7 @@ export default function CalendarIndex({
                                   evt.type === 'goal' ? 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 border-yellow-500/20' :
                                   evt.type === 'subscription' ? 'bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-500/20' :
                                   evt.type === 'debt_payable' ? 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20' :
+                                  evt.type === 'transfer' ? 'bg-zinc-500/10 text-zinc-500 dark:text-zinc-400 border-zinc-500/20' :
                                   'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20'
                               }`}
                             >
