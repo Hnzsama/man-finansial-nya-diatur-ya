@@ -119,63 +119,67 @@ export function SpendingChart({ data }: { data: ChartDataPoint[] }) {
         </CardAction>
       </CardHeader>
       <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
-        <ChartContainer
-          config={chartConfigInteractive}
-          className="aspect-auto h-[250px] w-full"
-        >
-          <AreaChart data={filteredData}>
-            <defs>
-              <linearGradient id="fillIncome" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="var(--color-income)" stopOpacity={0.8} />
-                <stop offset="95%" stopColor="var(--color-income)" stopOpacity={0.1} />
-              </linearGradient>
-              <linearGradient id="fillExpense" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="var(--color-expense)" stopOpacity={0.8} />
-                <stop offset="95%" stopColor="var(--color-expense)" stopOpacity={0.1} />
-              </linearGradient>
-            </defs>
-            <CartesianGrid vertical={false} />
-            <XAxis
-              dataKey="date"
-              tickLine={false}
-              axisLine={false}
-              tickMargin={8}
-              minTickGap={32}
-              tickFormatter={(value) => {
-                const date = new Date(value);
-                return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-              }}
-            />
-            <YAxis
-              tickLine={false}
-              axisLine={false}
-              tickMargin={8}
-              tickFormatter={(value) => {
-                if (value >= 1_000_000) {
-                  return `Rp ${(value / 1_000_000).toFixed(0)}M`;
-                }
-                if (value >= 1_000) {
-                  return `Rp ${(value / 1_000).toFixed(0)}K`;
-                }
-                return `Rp ${value}`;
-              }}
-              width={65}
-            />
-            <ChartTooltip
-              cursor={false}
-              content={
-                <ChartTooltipContent
-                  labelFormatter={(value) => {
-                    return new Date(value).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+        <div className="overflow-x-auto w-full">
+          <div className="min-w-[500px] w-full">
+            <ChartContainer
+              config={chartConfigInteractive}
+              className="aspect-auto h-[250px] w-full"
+            >
+              <AreaChart data={filteredData}>
+                <defs>
+                  <linearGradient id="fillIncome" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="var(--color-income)" stopOpacity={0.8} />
+                    <stop offset="95%" stopColor="var(--color-income)" stopOpacity={0.1} />
+                  </linearGradient>
+                  <linearGradient id="fillExpense" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="var(--color-expense)" stopOpacity={0.8} />
+                    <stop offset="95%" stopColor="var(--color-expense)" stopOpacity={0.1} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid vertical={false} />
+                <XAxis
+                  dataKey="date"
+                  tickLine={false}
+                  axisLine={false}
+                  tickMargin={8}
+                  minTickGap={10}
+                  tickFormatter={(value) => {
+                    const date = new Date(value);
+                    return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
                   }}
-                  indicator="dot"
                 />
-              }
-            />
-            <Area dataKey="expense" type="natural" fill="url(#fillExpense)" stroke="var(--color-expense)" stackId="a" />
-            <Area dataKey="income" type="natural" fill="url(#fillIncome)" stroke="var(--color-income)" stackId="a" />
-          </AreaChart>
-        </ChartContainer>
+                <YAxis
+                  tickLine={false}
+                  axisLine={false}
+                  tickMargin={8}
+                  tickFormatter={(value) => {
+                    if (value >= 1_000_000) {
+                      return `Rp ${(value / 1_000_000).toFixed(0)}M`;
+                    }
+                    if (value >= 1_000) {
+                      return `Rp ${(value / 1_000).toFixed(0)}K`;
+                    }
+                    return `Rp ${value}`;
+                  }}
+                  width={65}
+                />
+                <ChartTooltip
+                  cursor={false}
+                  content={
+                    <ChartTooltipContent
+                      labelFormatter={(value) => {
+                        return new Date(value).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+                      }}
+                      indicator="dot"
+                    />
+                  }
+                />
+                <Area dataKey="expense" type="natural" fill="url(#fillExpense)" stroke="var(--color-expense)" stackId="a" />
+                <Area dataKey="income" type="natural" fill="url(#fillIncome)" stroke="var(--color-income)" stackId="a" />
+              </AreaChart>
+            </ChartContainer>
+          </div>
+        </div>
       </CardContent>
     </Card>
   );

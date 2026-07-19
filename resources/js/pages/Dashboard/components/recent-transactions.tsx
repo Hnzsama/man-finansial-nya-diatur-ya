@@ -124,8 +124,12 @@ function TableCellViewer({ item }: { item: Transaction }) {
   return (
     <Drawer direction={isMobile ? "bottom" : "right"}>
       <DrawerTrigger asChild>
-        <Button variant="link" className="w-fit px-0 text-left text-foreground whitespace-normal break-all h-auto text-sm justify-start font-normal hover:no-underline">
-          {item.notes || <span className="italic text-muted-foreground text-xs">No notes</span>}
+        <Button variant="link" className="w-fit px-0 text-left text-foreground h-auto text-sm justify-start font-normal hover:no-underline">
+          {item.notes ? (
+            <span className="max-w-[80px] sm:max-w-[150px] md:max-w-[200px] truncate block text-left">{item.notes}</span>
+          ) : (
+            <span className="italic text-muted-foreground text-xs">No notes</span>
+          )}
         </Button>
       </DrawerTrigger>
       <DrawerContent>
@@ -389,7 +393,7 @@ export function RecentTransactions({ data, wallets }: { data: Transaction[], wal
         </div>
       </div>
       <TabsContent value="outline" className="relative flex flex-col gap-4 overflow-auto px-4 lg:px-6">
-        <div className="overflow-hidden rounded-lg border">
+        <div className="overflow-x-auto rounded-lg border">
           <Table>
             <TableHeader className="sticky top-0 z-10 bg-muted">
               {table.getHeaderGroups().map((hg) => (
