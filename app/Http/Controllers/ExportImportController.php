@@ -2,9 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
+use App\Models\Transaction;
 use App\Models\Wallet;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -18,13 +22,32 @@ class ExportImportController extends Controller
         $user = $request->user();
         $wallets = Wallet::where('user_id', $user->id)->get();
 
+        // Fetch all transactions for this user to pass to export panel
+        $transactions = Transaction::with(['wallet', 'category'])
+            ->where('user_id', $user->id)
+            ->orderBy('date', 'desc')
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(function ($tx) {
+                return [
+                    'date' => $tx->date ? $tx->date->format('Y-m-d') : '',
+                    'type' => $tx->type,
+                    'amount' => (float) $tx->amount,
+                    'category' => $tx->category?->name ?? '-',
+                    'wallet' => $tx->wallet?->name ?? '-',
+                    'wallet_id' => $tx->wallet_id,
+                    'notes' => $tx->notes ?? '',
+                ];
+            });
+
         return Inertia::render('ExportsImports/Index', [
             'wallets' => $wallets,
+            'realTransactions' => $transactions,
         ]);
     }
 
     /**
-     * Store a newly created resource in storage (mock upload CSV).
+     * Store a newly created resource in storage (real upload and parsing of CSV).
      */
     public function store(Request $request): RedirectResponse
     {
@@ -32,7 +55,109 @@ class ExportImportController extends Controller
             'csv_file' => ['required', 'file', 'mimes:csv,txt', 'max:2048'],
         ]);
 
-        // Simulating parsing of bank mutation rows
-        return redirect()->back()->with('success', 'Simulated CSV ledger imported successfully (12 transaction records parsed).');
+        $user = $request->user();
+        $file = $request->file('csv_file');
+        $path = $file->getRealPath();
+
+        try {
+            $handle = fopen($path, 'r');
+            if ($handle === false) {
+                return redirect()->back()->withErrors(['csv_file' => 'Gagal membuka file CSV.']);
+            }
+
+            $header = null;
+            $rowCount = 0;
+
+            DB::transaction(function () use ($handle, $user, &$rowCount, &$header) {
+                while (($row = fgetcsv($handle, 1000, ',')) !== false) {
+                    // Skip empty rows or comment rows starting with '#'
+                    if (empty($row) || ! isset($row[0]) || str_starts_with(trim($row[0]), '#')) {
+                        continue;
+                    }
+
+                    if (! $header) {
+                        // Normalize headers: lowercase and trimmed
+                        $header = array_map(function ($h) {
+                            return strtolower(trim($h));
+                        }, $row);
+
+                        continue;
+                    }
+
+                    // Map row items to headers
+                    if (count($header) !== count($row)) {
+                        continue;
+                    }
+                    $data = array_combine($header, $row);
+                    if (! $data) {
+                        continue;
+                    }
+
+                    $date = $data['date'] ?? now()->format('Y-m-d');
+                    $type = strtolower(trim($data['type'] ?? 'expense'));
+                    if (! in_array($type, ['income', 'expense'])) {
+                        $type = 'expense';
+                    }
+                    $amount = (float) ($data['amount'] ?? 0);
+                    $categoryName = trim($data['category'] ?? '');
+                    $walletName = trim($data['wallet'] ?? '');
+                    $notes = trim($data['notes'] ?? '');
+
+                    // 1. Resolve Wallet
+                    $wallet = Wallet::where('user_id', $user->id)
+                        ->where('name', $walletName)
+                        ->first();
+                    if (! $wallet) {
+                        $wallet = Wallet::firstOrCreate([
+                            'user_id' => $user->id,
+                            'name' => $walletName ?: 'Cash',
+                        ], [
+                            'type' => 'cash',
+                            'current_balance' => 0,
+                        ]);
+                    }
+
+                    // 2. Resolve Category
+                    $categoryId = null;
+                    if ($categoryName) {
+                        $category = Category::firstOrCreate([
+                            'user_id' => $user->id,
+                            'name' => $categoryName,
+                            'type' => $type,
+                        ]);
+                        $categoryId = $category->id;
+                    }
+
+                    // 3. Create Transaction
+                    Transaction::create([
+                        'user_id' => $user->id,
+                        'wallet_id' => $wallet->id,
+                        'category_id' => $categoryId,
+                        'type' => $type,
+                        'amount' => $amount,
+                        'date' => $date,
+                        'notes' => $notes ?: null,
+                    ]);
+
+                    // 4. Update Wallet balance
+                    if ($type === 'income') {
+                        $wallet->current_balance = (float) $wallet->current_balance + $amount;
+                    } else {
+                        $wallet->current_balance = (float) $wallet->current_balance - $amount;
+                    }
+                    $wallet->save();
+
+                    $rowCount++;
+                }
+            });
+
+            fclose($handle);
+
+            return redirect()->back()->with('success', "Berhasil mengimpor {$rowCount} catatan transaksi riil ke database.");
+        } catch (\Exception $e) {
+            Log::error('Gagal mengimpor CSV: '.$e->getMessage());
+
+            return redirect()->back()->withErrors(['csv_file' => 'Gagal memproses file CSV: '.$e->getMessage()]);
+        }
     }
 }

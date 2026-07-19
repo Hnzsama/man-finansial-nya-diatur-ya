@@ -20,6 +20,7 @@ interface Wallet {
 
 interface ExportPanelProps {
   wallets: Wallet[];
+  realTransactions: any[];
 }
 
 const SAMPLE_ROWS: (XlsRow & HtmlReportRow)[] = [
@@ -136,7 +137,7 @@ function DateRangePicker({
   );
 }
 
-export function ExportPanel({ wallets }: ExportPanelProps) {
+export function ExportPanel({ wallets, realTransactions }: ExportPanelProps) {
   const [exportScope, setExportScope] = useState('all');
   const [exportFormat, setExportFormat] = useState('html');
   const [selectedWallet, setSelectedWallet] = useState('all');
@@ -146,6 +147,22 @@ export function ExportPanel({ wallets }: ExportPanelProps) {
   const endDate = dateRange?.to ? format(dateRange.to, 'yyyy-MM-dd') : '';
 
   const handleExport = () => {
+    // Filter real user transactions based on current UI settings
+    const filteredRows = realTransactions.filter((row) => {
+      // Filter by wallet account
+      if (selectedWallet !== 'all' && row.wallet_id?.toString() !== selectedWallet) {
+        return false;
+      }
+      // Filter by date range constraints
+      if (startDate && row.date < startDate) {
+        return false;
+      }
+      if (endDate && row.date > endDate) {
+        return false;
+      }
+      return true;
+    });
+
     const rangeMsg = startDate && endDate ? ` ${startDate} s/d ${endDate}` : ' (semua data)';
     toast.success(`Mengekspor ${exportScope}${rangeMsg} format ${exportFormat.toUpperCase()}...`);
 
@@ -157,14 +174,14 @@ export function ExportPanel({ wallets }: ExportPanelProps) {
     const suffix = `${exportScope}_${startDate || 'all'}_to_${endDate || 'now'}`;
 
     if (exportFormat === 'html') {
-      const content = buildHtmlReport(exportScope, walletLabel, startDate, endDate, SAMPLE_ROWS);
+      const content = buildHtmlReport(exportScope, walletLabel, startDate, endDate, filteredRows);
       downloadBlob(content, `finance_report_${suffix}.html`, 'text/html;charset=utf-8');
     } else if (exportFormat === 'xlsx') {
-      const content = buildXlsXml(exportScope, walletLabel, startDate, endDate, SAMPLE_ROWS);
+      const content = buildXlsXml(exportScope, walletLabel, startDate, endDate, filteredRows);
       downloadBlob(content, `finance_report_${suffix}.xls`, 'application/vnd.ms-excel');
     } else {
       const headers = 'Date,Type,Amount,Category,Wallet,Notes\n';
-      const csvRows = SAMPLE_ROWS.map(
+      const csvRows = filteredRows.map(
         (r) => `${r.date},${r.type},${r.amount},${r.category},${r.wallet},${r.notes}`,
       ).join('\n');
       downloadBlob(headers + csvRows, `finance_report_${suffix}.csv`, 'text/csv');

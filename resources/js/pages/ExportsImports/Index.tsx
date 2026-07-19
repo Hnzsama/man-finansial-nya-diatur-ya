@@ -14,11 +14,12 @@ interface Wallet {
 
 interface PageProps {
   wallets: Wallet[];
+  realTransactions: any[];
 }
 
 const breadcrumbs: BreadcrumbItem[] = [{ title: 'Export & Import', href: exportsIndex.url() }];
 
-export default function ExportsImportsIndex({ wallets }: PageProps) {
+export default function ExportsImportsIndex({ wallets, realTransactions }: PageProps) {
   return (
     <>
       <Head title="Export & Import Data" />
@@ -32,7 +33,7 @@ export default function ExportsImportsIndex({ wallets }: PageProps) {
               </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-              <ExportPanel wallets={wallets} />
+              <ExportPanel wallets={wallets} realTransactions={realTransactions} />
               <ImportPanel />
             </div>
           </div>
