@@ -363,7 +363,7 @@ export function RecentTransactions({ data, wallets }: { data: Transaction[], wal
 
   return (
     <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full flex-col justify-start gap-6">
-      <div className="flex items-center justify-between px-4 lg:px-6">
+      <div className="flex flex-wrap items-center justify-between gap-3 px-4 lg:px-6">
         <Label htmlFor="view-selector" className="sr-only">View</Label>
         <Select value={activeTab} onValueChange={setActiveTab}>
           <SelectTrigger className="flex w-fit @4xl/main:hidden" size="sm" id="view-selector">
@@ -378,7 +378,7 @@ export function RecentTransactions({ data, wallets }: { data: Transaction[], wal
           <TabsTrigger value="outline">Recent Transactions</TabsTrigger>
           <TabsTrigger value="key-personnel">Wallets List</TabsTrigger>
         </TabsList>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {activeTab === "outline" && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
