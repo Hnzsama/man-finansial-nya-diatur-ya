@@ -1,5 +1,5 @@
 import { Head, router, useForm } from '@inertiajs/react';
-import { IconPlus, IconArrowsRightLeft } from '@tabler/icons-react';
+import { IconPlus, IconArrowsRightLeft, IconChevronLeft, IconChevronRight, IconChevronsLeft, IconChevronsRight } from '@tabler/icons-react';
 import React, { useState } from 'react';
 import { index as transactionIndex, destroy as transactionDestroy } from '@/actions/App/Http/Controllers/TransactionController';
 import { Button } from '@/components/ui/button';
@@ -21,6 +21,10 @@ interface PageProps {
         current_page: number;
         last_page: number;
         total: number;
+        first_page_url: string;
+        last_page_url: string;
+        prev_page_url: string | null;
+        next_page_url: string | null;
     };
     wallets: Wallet[];
     categories: Category[];
@@ -126,12 +130,58 @@ export default function TransactionsIndex({ transactions, wallets, categories, s
                         <div className="flex flex-col justify-start gap-6">
                             <DataTable columns={columns} data={transactions.data} />
 
-                            <div className="flex items-center justify-between text-sm text-muted-foreground">
-                                <div>
+                            <div className="flex flex-col sm:flex-row items-center justify-between p-4 gap-4 border-t border-border/40 bg-card/30 rounded-xl">
+                                <div className="text-sm text-muted-foreground text-center sm:text-left">
                                     Showing <span className="font-medium text-foreground">{transactions.data.length}</span> of{' '}
                                     <span className="font-medium text-foreground">{transactions.total}</span> records.
                                 </div>
-                                {/* Pagination controls can go here */}
+                                <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 lg:gap-8">
+                                    <div className="flex items-center justify-center text-sm font-medium whitespace-nowrap text-muted-foreground">
+                                        Page <span className="text-foreground font-semibold px-1">{transactions.current_page}</span> of <span className="text-foreground font-semibold px-1">{transactions.last_page}</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <Button
+                                            variant="outline"
+                                            className="hidden h-8 w-8 p-0 lg:flex"
+                                            size="icon"
+                                            onClick={() => router.get(transactions.first_page_url, {}, { preserveScroll: true, preserveState: true })}
+                                            disabled={transactions.current_page === 1}
+                                        >
+                                            <span className="sr-only">Go to first page</span>
+                                            <IconChevronsLeft className="h-4 w-4" />
+                                        </Button>
+                                        <Button
+                                            variant="outline"
+                                            className="h-8 w-8 p-0"
+                                            size="icon"
+                                            onClick={() => transactions.prev_page_url && router.get(transactions.prev_page_url, {}, { preserveScroll: true, preserveState: true })}
+                                            disabled={!transactions.prev_page_url}
+                                        >
+                                            <span className="sr-only">Go to previous page</span>
+                                            <IconChevronLeft className="h-4 w-4" />
+                                        </Button>
+                                        <Button
+                                            variant="outline"
+                                            className="h-8 w-8 p-0"
+                                            size="icon"
+                                            onClick={() => transactions.next_page_url && router.get(transactions.next_page_url, {}, { preserveScroll: true, preserveState: true })}
+                                            disabled={!transactions.next_page_url}
+                                        >
+                                            <span className="sr-only">Go to next page</span>
+                                            <IconChevronRight className="h-4 w-4" />
+                                        </Button>
+                                        <Button
+                                            variant="outline"
+                                            className="hidden h-8 w-8 p-0 lg:flex"
+                                            size="icon"
+                                            onClick={() => router.get(transactions.last_page_url, {}, { preserveScroll: true, preserveState: true })}
+                                            disabled={transactions.current_page === transactions.last_page}
+                                        >
+                                            <span className="sr-only">Go to last page</span>
+                                            <IconChevronsRight className="h-4 w-4" />
+                                        </Button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -83,4 +83,18 @@ class Transaction extends Model
             dispatch(new \App\Jobs\SendWhatsAppNotification($message));
         });
     }
+
+    /**
+     * Scope a query to only include non-transfer transactions.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeWithoutTransfers($query)
+    {
+        return $query->where(function ($q) {
+            $q->whereNull('metadata->is_transfer')
+              ->orWhere('metadata->is_transfer', '!=', true);
+        });
+    }
 }

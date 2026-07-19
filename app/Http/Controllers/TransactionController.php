@@ -72,7 +72,7 @@ class TransactionController extends Controller
             $categories = Category::where('user_id', $user->id)->get();
 
             // Calculate quick stats based on filters
-            $statsQuery = Transaction::where('user_id', $user->id);
+            $statsQuery = Transaction::where('user_id', $user->id)->withoutTransfers();
             if ($startDate) {
                 $statsQuery->whereDate('date', '>=', $startDate);
             }
@@ -101,6 +101,7 @@ class TransactionController extends Controller
                 $lastEndDate = $end->copy()->subDays($days)->toDateString();
 
                 $lastPeriodStatsQuery = Transaction::where('user_id', $user->id)
+                    ->withoutTransfers()
                     ->whereDate('date', '>=', $lastStartDate)
                     ->whereDate('date', '<=', $lastEndDate);
                 if ($walletId && $walletId !== 'all') {

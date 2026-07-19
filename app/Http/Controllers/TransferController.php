@@ -73,6 +73,7 @@ class TransferController extends Controller
                     'amount' => $amount,
                     'date' => $validated['date'],
                     'notes' => $expenseNotes,
+                    'metadata' => ['is_transfer' => true],
                 ]);
 
                 // 2. Create Income Transaction on destination wallet
@@ -84,6 +85,7 @@ class TransferController extends Controller
                     'amount' => $amount,
                     'date' => $validated['date'],
                     'notes' => $incomeNotes,
+                    'metadata' => ['is_transfer' => true],
                 ]);
 
                 // 3. Create Transfer record linking them

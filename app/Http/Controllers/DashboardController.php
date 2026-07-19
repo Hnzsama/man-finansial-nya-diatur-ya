@@ -33,6 +33,7 @@ class DashboardController extends Controller
 
             $currentMonthTransactions = Transaction::where('user_id', $userId)
                 ->whereBetween('date', [$startOfMonth, $endOfMonth])
+                ->withoutTransfers()
                 ->get();
 
             $monthlyIncome = $currentMonthTransactions->where('type', 'income')->sum('amount');
@@ -44,6 +45,7 @@ class DashboardController extends Controller
 
             $lastMonthTransactions = Transaction::where('user_id', $userId)
                 ->whereBetween('date', [$startOfLastMonth, $endOfLastMonth])
+                ->withoutTransfers()
                 ->get();
 
             $lastMonthIncome = $lastMonthTransactions->where('type', 'income')->sum('amount');
@@ -69,6 +71,7 @@ class DashboardController extends Controller
             $chartTransactions = Transaction::where('user_id', $userId)
                 ->where('date', '>=', $startDate)
                 ->whereIn('type', ['income', 'expense'])
+                ->withoutTransfers()
                 ->select('date', DB::raw('type'), DB::raw('SUM(amount) as total'))
                 ->groupBy('date', 'type')
                 ->get();
@@ -117,6 +120,7 @@ class DashboardController extends Controller
             $topBudgets = $activeBudgets->map(function ($budget) use ($userId, $startOfMonth, $endOfMonth) {
                 $spent = Transaction::where('user_id', $userId)
                     ->where('type', 'expense')
+                    ->withoutTransfers()
                     ->when($budget->category_id, fn ($q) => $q->where('category_id', $budget->category_id))
                     ->whereBetween('date', [$startOfMonth, $endOfMonth])
                     ->sum('amount');

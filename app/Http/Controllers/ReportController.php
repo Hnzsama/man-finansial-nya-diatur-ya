@@ -21,6 +21,7 @@ class ReportController extends Controller
 
         // 1. Fetch total income, total expense, and cash flow balance
         $summary = Transaction::where('user_id', $user->id)
+            ->withoutTransfers()
             ->selectRaw("
                 COALESCE(SUM(CASE WHEN type = 'income' THEN amount ELSE 0 END), 0) as total_income,
                 COALESCE(SUM(CASE WHEN type = 'expense' THEN amount ELSE 0 END), 0) as total_expense
@@ -30,6 +31,7 @@ class ReportController extends Controller
         // 2. Fetch category spending distribution
         $categories = Transaction::where('transactions.user_id', $user->id)
             ->where('transactions.type', 'expense')
+            ->withoutTransfers()
             ->join('categories', 'transactions.category_id', '=', 'categories.id')
             ->select('categories.name as category', DB::raw('SUM(transactions.amount) as value'))
             ->groupBy('categories.name')
@@ -44,6 +46,7 @@ class ReportController extends Controller
         };
 
         $monthlyTrend = Transaction::where('user_id', $user->id)
+            ->withoutTransfers()
             ->selectRaw("
                 {$monthSelector},
                 COALESCE(SUM(CASE WHEN type = 'income' THEN amount ELSE 0 END), 0) as income,
