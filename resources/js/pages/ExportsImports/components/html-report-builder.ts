@@ -38,23 +38,23 @@ export function buildHtmlReport(
     const ih = Math.round((d.income / barMax) * chartH);
     const eh = Math.round((d.expense / barMax) * chartH);
     return (
-      `<rect x="${x}" y="${padT + chartH - ih}" width="${bw}" height="${ih}" rx="4" fill="#12B76A" opacity="0.9"/>` +
-      `<rect x="${x + bw + gap}" y="${padT + chartH - eh}" width="${bw}" height="${eh}" rx="4" fill="#F04438" opacity="0.9"/>` +
-      `<text x="${x + bw}" y="${padT + chartH + 14}" text-anchor="middle" font-size="11" fill="#667085" font-family="Inter,sans-serif">${d.month}</text>`
+      `<rect x="${x}" y="${padT + chartH - ih}" width="${bw}" height="${ih}" rx="4" fill="#10b981" opacity="0.9"/>` +
+      `<rect x="${x + bw + gap}" y="${padT + chartH - eh}" width="${bw}" height="${eh}" rx="4" fill="#ef4444" opacity="0.9"/>` +
+      `<text x="${x + bw}" y="${padT + chartH + 14}" text-anchor="middle" font-size="11" fill="#71717a" font-family="Inter,sans-serif">${d.month}</text>`
     );
   }).join('');
 
   const yGridLines = [0, 0.25, 0.5, 0.75, 1].map(pct => {
     const y = padT + chartH - Math.round(pct * chartH);
     const val = Math.round(pct * barMax / 1000000);
-    return `<line x1="${padL - 6}" y1="${y}" x2="${chartW - padR}" y2="${y}" stroke="#EAECF0" stroke-width="1"/>
-            <text x="${padL - 10}" y="${y + 4}" text-anchor="end" font-size="10" fill="#98A2B3" font-family="Inter,sans-serif">${val}jt</text>`;
+    return `<line x1="${padL - 6}" y1="${y}" x2="${chartW - padR}" y2="${y}" stroke="#e4e4e7" stroke-width="1"/>
+            <text x="${padL - 10}" y="${y + 4}" text-anchor="end" font-size="10" fill="#a1a1aa" font-family="Inter,sans-serif">${val}jt</text>`;
   }).join('');
 
   // Donut chart
   const catMap: Record<string, number> = {};
   rows.filter(r => r.type === 'expense').forEach(r => { catMap[r.category] = (catMap[r.category] || 0) + r.amount; });
-  const catColors = ['#3B5BDB', '#12B76A', '#F79009', '#F04438', '#9B8AFB', '#06B6D4'];
+  const catColors = ['#6366f1', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4'];
   const cats = Object.entries(catMap);
   const catTotal = cats.reduce((s, [, v]) => s + v, 0);
   const dCx = 110, dCy = 110, dR = 85, dIR = 52;
@@ -72,28 +72,28 @@ export function buildHtmlReport(
   }).join('');
 
   const donutLegend = cats.map(([cat, val], i) => (
-    `<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-      <div style="width:12px;height:12px;border-radius:3px;background:${catColors[i % catColors.length]};flex-shrink:0;"></div>
-      <span style="font-size:13px;color:#344054;flex:1;">${cat}</span>
-      <span style="font-size:13px;font-weight:600;color:#1D2939;">${fmt(val)}</span>
+    `<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+      <div style="width:10px;height:10px;border-radius:2px;background:${catColors[i % catColors.length]};flex-shrink:0;"></div>
+      <span style="font-size:12px;color:#27272a;flex:1;font-weight:400;">${cat}</span>
+      <span style="font-size:12px;font-weight:600;color:#09090b;">${fmt(val)}</span>
     </div>`
   )).join('');
 
   const txRows = rows.map((r, i) => (
-    `<tr style="background:${i % 2 === 0 ? '#FFFFFF' : '#F9FAFB'};">
-      <td style="padding:10px 14px;border-bottom:1px solid #EAECF0;font-size:13px;color:#344054;">${r.date}</td>
-      <td style="padding:10px 14px;border-bottom:1px solid #EAECF0;">
-        <span style="display:inline-block;padding:2px 10px;border-radius:999px;font-size:11px;font-weight:700;
-          background:${r.type === 'income' ? '#D1FADF' : '#FEE4E2'};color:${r.type === 'income' ? '#027A48' : '#B42318'};">
+    `<tr style="background:${i % 2 === 0 ? '#FFFFFF' : '#fafafa'}; transition: background-color 0.2s;">
+      <td style="padding:12px 16px;border-bottom:1px solid #f4f4f5;font-size:13px;color:#27272a;font-weight:400;">${r.date}</td>
+      <td style="padding:12px 16px;border-bottom:1px solid #f4f4f5;">
+        <span style="display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;
+          background:${r.type === 'income' ? '#ecfdf5' : '#fef2f2'};color:${r.type === 'income' ? '#065f46' : '#991b1b'}; border: 1px solid ${r.type === 'income' ? '#a7f3d0' : '#fecaca'};">
           ${r.type.toUpperCase()}
         </span>
       </td>
-      <td style="padding:10px 14px;border-bottom:1px solid #EAECF0;font-size:13px;font-weight:700;text-align:right;color:${r.type === 'income' ? '#027A48' : '#B42318'};">
+      <td style="padding:12px 16px;border-bottom:1px solid #f4f4f5;font-size:13px;font-weight:600;text-align:right;font-family:monospace;color:${r.type === 'income' ? '#059669' : '#dc2626'};">
         ${r.type === 'income' ? '+' : '-'}${fmt(r.amount)}
       </td>
-      <td style="padding:10px 14px;border-bottom:1px solid #EAECF0;font-size:13px;color:#344054;">${r.category}</td>
-      <td style="padding:10px 14px;border-bottom:1px solid #EAECF0;font-size:13px;color:#344054;">${r.wallet}</td>
-      <td style="padding:10px 14px;border-bottom:1px solid #EAECF0;font-size:13px;color:#667085;">${r.notes}</td>
+      <td style="padding:12px 16px;border-bottom:1px solid #f4f4f5;font-size:13px;color:#27272a;">${r.category}</td>
+      <td style="padding:12px 16px;border-bottom:1px solid #f4f4f5;font-size:13px;color:#27272a;">${r.wallet}</td>
+      <td style="padding:12px 16px;border-bottom:1px solid #f4f4f5;font-size:13px;color:#71717a;">${r.notes || '-'}</td>
     </tr>`
   )).join('');
 
@@ -101,102 +101,112 @@ export function buildHtmlReport(
 <html lang="id">
 <head>
   <meta charset="UTF-8"/>
-  <title>Finance Report – ${scope}</title>
+  <title>Laporan Keuangan – ${scope}</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
   <style>
     *{margin:0;padding:0;box-sizing:border-box;}
-    body{font-family:'Inter',sans-serif;background:#F2F4F7;color:#1D2939;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
-    @media print{body{background:#fff;}.no-print{display:none!important;}.page{box-shadow:none!important;margin:0!important;border-radius:0!important;}}
-    .page{max-width:960px;margin:32px auto;background:#fff;border-radius:16px;box-shadow:0 4px 32px rgba(0,0,0,.10);overflow:hidden;}
-    .header{background:linear-gradient(135deg,#1B2A4A 0%,#2D4270 60%,#3B5BDB 100%);padding:40px 48px 32px;position:relative;}
-    .header-title{font-size:26px;font-weight:800;color:#fff;letter-spacing:-.5px;}
-    .header-subtitle{font-size:14px;color:#A8C0E8;margin-top:4px;}
-    .header-badge{position:absolute;top:36px;right:48px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:8px 16px;font-size:12px;color:#CBD5FF;text-align:right;}
-    .meta-bar{background:#F8FAFC;border-bottom:1px solid #EAECF0;padding:16px 48px;display:flex;gap:32px;flex-wrap:wrap;}
-    .meta-item{font-size:12px;color:#667085;}.meta-item strong{color:#344054;font-weight:600;}
-    .section{padding:32px 48px;border-bottom:1px solid #EAECF0;}.section:last-child{border-bottom:none;}
-    .section-title{font-size:15px;font-weight:700;color:#1D2939;margin-bottom:20px;display:flex;align-items:center;gap:8px;}
-    .section-title::before{content:'';display:inline-block;width:4px;height:18px;background:linear-gradient(to bottom,#3B5BDB,#6B8AFF);border-radius:2px;}
+    body{font-family:'Inter',sans-serif;background:#fafafa;color:#09090b;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    @media print{
+      body{background:#fff;}
+      .no-print{display:none!important;}
+      .page{box-shadow:none!important;margin:0!important;border:none!important;max-width:100%!important;}
+    }
+    .page{max-width:1000px;margin:40px auto;background:#fff;border-radius:8px;border:1px solid #e4e4e7;box-shadow:0 1px 3px 0 rgba(0,0,0,0.1),0 1px 2px 0 rgba(0,0,0,0.06);overflow:hidden;}
+    .header{padding:32px 40px;border-bottom:1px solid #e4e4e7;position:relative;background:#ffffff;}
+    .header-title{font-size:24px;font-weight:700;color:#09090b;letter-spacing:-.5px;display:flex;align-items:center;gap:10px;}
+    .header-subtitle{font-size:14px;color:#71717a;margin-top:6px;font-weight:400;}
+    .header-badge{position:absolute;top:32px;right:40px;background:#f4f4f5;border:1px solid #e4e4e7;border-radius:6px;padding:6px 12px;font-size:12px;color:#27272a;font-weight:500;}
+    .meta-bar{background:#fafafa;border-bottom:1px solid #e4e4e7;padding:16px 40px;display:flex;gap:32px;flex-wrap:wrap;}
+    .meta-item{font-size:12px;color:#71717a;}.meta-item strong{color:#09090b;font-weight:600;}
+    .section{padding:32px 40px;border-bottom:1px solid #e4e4e7;}.section:last-child{border-bottom:none;}
+    .section-title{font-size:16px;font-weight:600;color:#09090b;margin-bottom:20px;letter-spacing:-0.2px;}
     .summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
-    .summary-card{border-radius:12px;padding:20px 24px;}
-    .summary-card.income{background:#ECFDF3;border:1px solid #A9EFC5;}
-    .summary-card.expense{background:#FEF3F2;border:1px solid #FECDCA;}
-    .summary-card.net{background:#EEF2FF;border:2px solid #C7D2FE;}
-    .sc-label{font-size:12px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;}
-    .sc-label.income{color:#027A48;}.sc-label.expense{color:#B42318;}.sc-label.net{color:#3730A3;}
-    .sc-value{font-size:22px;font-weight:800;margin-top:8px;}
-    .sc-value.income{color:#12B76A;}.sc-value.expense{color:#F04438;}.sc-value.net{color:#3B5BDB;}
-    .charts-row{display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:start;}
-    .chart-box{background:#F9FAFB;border:1px solid #EAECF0;border-radius:12px;padding:20px;}
-    .chart-box-title{font-size:13px;font-weight:700;color:#344054;margin-bottom:16px;}
-    .chart-legend{display:flex;gap:16px;margin-bottom:12px;}
-    .legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:#667085;}
+    .summary-card{border-radius:8px;padding:20px 24px;background:#ffffff;border:1px solid #e4e4e7;box-shadow:0 1px 2px 0 rgba(0,0,0,0.05);}
+    .summary-card.income{border-left:4px solid #10b981;}
+    .summary-card.expense{border-left:4px solid #ef4444;}
+    .summary-card.net{border-left:4px solid #6366f1;}
+    .sc-label{font-size:12px;font-weight:500;color:#71717a;letter-spacing:.3px;text-transform:uppercase;}
+    .sc-value{font-size:24px;font-weight:700;margin-top:8px;color:#09090b;letter-spacing:-0.5px;}
+    .charts-row{display:grid;grid-template-columns:1.2fr 1fr;gap:24px;align-items:start;}
+    .chart-box{background:#ffffff;border:1px solid #e4e4e7;border-radius:8px;padding:24px;box-shadow:0 1px 2px 0 rgba(0,0,0,0.05);}
+    .chart-box-title{font-size:14px;font-weight:600;color:#09090b;margin-bottom:16px;}
+    .chart-legend{display:flex;gap:16px;margin-bottom:16px;}
+    .legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:#71717a;}
     .legend-dot{width:10px;height:10px;border-radius:2px;}
-    .tx-table{width:100%;border-collapse:collapse;}
-    .tx-table th{padding:10px 14px;background:#1D2939;color:#fff;font-size:12px;font-weight:600;text-align:left;}
-    .tx-table th:first-child{border-radius:8px 0 0 0;}.tx-table th:last-child{border-radius:0 8px 0 0;}
-    .print-btn{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#3B5BDB,#6B8AFF);color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:24px;}
-    .footer{background:#F8FAFC;padding:24px 48px;text-align:center;font-size:12px;color:#98A2B3;border-top:1px solid #EAECF0;}
+    .table-container{width:100%;border:1px solid #e4e4e7;border-radius:8px;overflow:hidden;box-shadow:0 1px 2px 0 rgba(0,0,0,0.05);}
+    .tx-table{width:100%;border-collapse:collapse;text-align:left;}
+    .tx-table th{padding:12px 16px;background:#fafafa;color:#71717a;font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid #e4e4e7;}
+    .print-btn{display:inline-flex;align-items:center;gap:8px;background:#18181b;color:#ffffff;border:none;border-radius:6px;padding:8px 16px;font-size:13px;font-weight:500;cursor:pointer;margin-bottom:20px;transition:background-color 0.2s;box-shadow:0 1px 2px 0 rgba(0,0,0,0.05);}
+    .print-btn:hover{background:#27272a;}
+    .footer{background:#fafafa;padding:24px 40px;text-align:center;font-size:12px;color:#71717a;border-top:1px solid #e4e4e7;}
   </style>
 </head>
 <body>
-  <div style="padding:24px 32px 0;" class="no-print">
-    <button class="print-btn" onclick="window.print()">🖨️ Cetak / Simpan PDF</button>
+  <div style="padding:24px 40px 0; max-width:1000px; margin:0 auto;" class="no-print">
+    <button class="print-btn" onclick="window.print()">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-printer"><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 9V3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v6"/><rect x="6" y="14" width="12" height="8" rx="1"/></svg>
+      Cetak / Simpan PDF
+    </button>
   </div>
   <div class="page">
     <div class="header">
       <div class="header-badge">Dibuat: ${now}</div>
-      <div class="header-title">📊 Finance Statement Report</div>
-      <div class="header-subtitle">Laporan keuangan — Finance Manager Application</div>
+      <div class="header-title">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-zinc-900"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M12 18v-6"/><path d="M9 15h6"/></svg>
+        Laporan Finansial Riil
+      </div>
+      <div class="header-subtitle">Laporan ekspor data ledger resmi — Aplikasi Man Finance</div>
     </div>
     <div class="meta-bar">
-      <div class="meta-item">Scope: <strong>${scope.toUpperCase()}</strong></div>
+      <div class="meta-item">Cakupan: <strong>${scope.toUpperCase()}</strong></div>
       <div class="meta-item">Periode: <strong>${dateFrom || 'Semua'} s/d ${dateTo || 'Sekarang'}</strong></div>
-      <div class="meta-item">Wallet: <strong>${walletLabel}</strong></div>
+      <div class="meta-item">Dompet: <strong>${walletLabel}</strong></div>
     </div>
     <div class="section">
       <div class="section-title">Ringkasan Finansial</div>
       <div class="summary-grid">
-        <div class="summary-card income"><div class="sc-label income">Total Pemasukan</div><div class="sc-value income">${fmt(totalIncome)}</div></div>
-        <div class="summary-card expense"><div class="sc-label expense">Total Pengeluaran</div><div class="sc-value expense">${fmt(totalExpense)}</div></div>
-        <div class="summary-card net"><div class="sc-label net">Net Cash Flow</div><div class="sc-value net">${fmt(netCash)}</div></div>
+        <div class="summary-card income"><div class="sc-label">Total Pemasukan</div><div class="sc-value">${fmt(totalIncome)}</div></div>
+        <div class="summary-card expense"><div class="sc-label">Total Pengeluaran</div><div class="sc-value">${fmt(totalExpense)}</div></div>
+        <div class="summary-card net"><div class="sc-label">Net Cash Flow</div><div class="sc-value" style="color: ${netCash >= 0 ? '#059669' : '#dc2626'}">${fmt(netCash)}</div></div>
       </div>
     </div>
     <div class="section">
       <div class="section-title">Visualisasi Data</div>
       <div class="charts-row">
         <div class="chart-box">
-          <div class="chart-box-title">📈 Tren Bulanan</div>
+          <div class="chart-box-title">Tren Bulanan</div>
           <div class="chart-legend">
-            <div class="legend-item"><div class="legend-dot" style="background:#12B76A;"></div>Pemasukan</div>
-            <div class="legend-item"><div class="legend-dot" style="background:#F04438;"></div>Pengeluaran</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#10b981;"></div>Pemasukan</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#ef4444;"></div>Pengeluaran</div>
           </div>
           <svg width="100%" viewBox="0 0 ${chartW} ${padT + chartH + labelH}" xmlns="http://www.w3.org/2000/svg">
             ${yGridLines}${barSvgBars}
           </svg>
         </div>
         <div class="chart-box">
-          <div class="chart-box-title">🍩 Distribusi Pengeluaran</div>
-          <div style="display:flex;gap:20px;align-items:center;flex-wrap:wrap;">
-            <svg width="220" height="220" viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg">
+          <div class="chart-box-title">Distribusi Pengeluaran</div>
+          <div style="display:flex;gap:24px;align-items:center;flex-wrap:wrap;justify-content:center;">
+            <svg width="220" height="220" viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;">
               ${donutPaths}
               <circle cx="${dCx}" cy="${dCy}" r="${dIR - 6}" fill="#fff"/>
-              <text x="${dCx}" y="${dCy - 6}" text-anchor="middle" font-size="11" fill="#667085" font-family="Inter,sans-serif">Total</text>
-              <text x="${dCx}" y="${dCy + 12}" text-anchor="middle" font-size="12" font-weight="700" fill="#1D2939" font-family="Inter,sans-serif">${fmt(catTotal)}</text>
+              <text x="${dCx}" y="${dCy - 6}" text-anchor="middle" font-size="11" fill="#71717a" font-family="Inter,sans-serif">Total</text>
+              <text x="${dCx}" y="${dCy + 12}" text-anchor="middle" font-size="12" font-weight="700" fill="#09090b" font-family="Inter,sans-serif">${fmt(catTotal)}</text>
             </svg>
-            <div style="flex:1;min-width:140px;">${donutLegend}</div>
+            <div style="flex:1;min-width:160px;">${donutLegend}</div>
           </div>
         </div>
       </div>
     </div>
     <div class="section">
       <div class="section-title">Rincian Transaksi</div>
-      <table class="tx-table">
-        <thead><tr><th>Tanggal</th><th>Tipe</th><th style="text-align:right;">Jumlah</th><th>Kategori</th><th>Wallet</th><th>Catatan</th></tr></thead>
-        <tbody>${txRows}</tbody>
-      </table>
+      <div class="table-container">
+        <table class="tx-table">
+          <thead><tr><th>Tanggal</th><th>Tipe</th><th style="text-align:right;">Jumlah</th><th>Kategori</th><th>Wallet</th><th>Catatan</th></tr></thead>
+          <tbody>${txRows}</tbody>
+        </table>
+      </div>
     </div>
-    <div class="footer">Laporan ini dibuat otomatis. Mohon verifikasi dengan mutasi rekening bank.</div>
+    <div class="footer">Laporan keuangan ini digenerate secara otomatis oleh Aplikasi Man Finance.</div>
   </div>
 </body>
 </html>`;
