@@ -32,7 +32,7 @@ export function buildXlsXml(
   dateTo: string,
   rows: XlsRow[],
 ): string {
-  const now = new Date().toISOString().split('T')[0];
+  const now = new Date().toLocaleDateString('en-CA');
   const totalIncome = rows.filter(r => r.type === 'income').reduce((s, r) => s + r.amount, 0);
   const totalExpense = rows.filter(r => r.type === 'expense').reduce((s, r) => s + r.amount, 0);
   const netCash = totalIncome - totalExpense;

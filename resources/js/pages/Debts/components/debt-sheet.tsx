@@ -12,7 +12,7 @@ import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { format } from 'date-fns';
-import { cn } from '@/lib/utils';
+import { cn, parseLocalDate } from '@/lib/utils';
 import {
   Select,
   SelectContent,
@@ -215,7 +215,7 @@ export function DebtSheet({
                     >
                       <IconCalendar className="mr-2 h-4 w-4 shrink-0 opacity-70" />
                       {form.data.due_date ? (
-                        format(new Date(form.data.due_date), "PPP")
+                        format(parseLocalDate(form.data.due_date), "PPP")
                       ) : (
                         <span>Pick a date</span>
                       )}
@@ -224,7 +224,7 @@ export function DebtSheet({
                   <PopoverContent className="w-auto p-0" align="start">
                     <Calendar
                       mode="single"
-                      selected={form.data.due_date ? new Date(form.data.due_date) : undefined}
+                      selected={form.data.due_date ? parseLocalDate(form.data.due_date) : undefined}
                       onSelect={(date) => {
                         if (date) {
                           const year = date.getFullYear();
@@ -325,7 +325,7 @@ export function DebtSheet({
                     >
                       <IconCalendar className="mr-2 h-4 w-4 shrink-0 opacity-70" />
                       {editForm.data.due_date ? (
-                        format(new Date(editForm.data.due_date as string), "PPP")
+                        format(parseLocalDate(editForm.data.due_date as string), "PPP")
                       ) : (
                         <span>Pick a date</span>
                       )}
@@ -334,7 +334,7 @@ export function DebtSheet({
                   <PopoverContent className="w-auto p-0" align="start">
                     <Calendar
                       mode="single"
-                      selected={editForm.data.due_date ? new Date(editForm.data.due_date as string) : undefined}
+                      selected={editForm.data.due_date ? parseLocalDate(editForm.data.due_date as string) : undefined}
                       onSelect={(date) => {
                         if (date) {
                           const year = date.getFullYear();

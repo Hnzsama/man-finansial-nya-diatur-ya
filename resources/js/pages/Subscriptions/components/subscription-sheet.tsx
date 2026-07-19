@@ -22,6 +22,7 @@ import {
   SheetFooter,
 } from '@/components/ui/sheet';
 import { store as subStore, update as subUpdate, destroy as subDestroy } from '@/actions/App/Http/Controllers/SubscriptionController';
+import { localTodayString } from '@/lib/utils';
 
 interface Wallet {
   id: number;
@@ -74,7 +75,7 @@ export function SubscriptionSheet({
     name: '',
     amount: '',
     frequency: 'monthly' as 'daily' | 'weekly' | 'monthly' | 'yearly',
-    next_billing_date: new Date().toISOString().split('T')[0],
+    next_billing_date: localTodayString(),
     wallet_id: wallets[0]?.id?.toString() || '',
     category_id: '',
     is_active: true,

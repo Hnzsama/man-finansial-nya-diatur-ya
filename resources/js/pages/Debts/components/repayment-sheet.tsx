@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { format } from 'date-fns';
-import { cn } from '@/lib/utils';
+import { cn, localTodayString, parseLocalDate } from '@/lib/utils';
 import { IconCalendar } from '@tabler/icons-react';
 import {
   Select,
@@ -67,7 +67,7 @@ export function RepaymentSheet({
   const form = useForm({
     amount: '',
     wallet_id: wallets[0]?.id?.toString() || '',
-    date: new Date().toISOString().split('T')[0],
+    date: localTodayString(),
     notes: '',
   });
 
@@ -77,7 +77,7 @@ export function RepaymentSheet({
       form.setData({
         amount: debt ? debt.remaining_amount.toString() : '',
         wallet_id: wallets[0]?.id?.toString() || '',
-        date: new Date().toISOString().split('T')[0],
+        date: localTodayString(),
         notes: '',
       });
     }
@@ -219,7 +219,7 @@ export function RepaymentSheet({
                 >
                   <IconCalendar className="mr-2 h-4 w-4 shrink-0 opacity-70" />
                   {form.data.date ? (
-                    format(new Date(form.data.date), "PPP")
+                    format(parseLocalDate(form.data.date), "PPP")
                   ) : (
                     <span>Pick a date</span>
                   )}
@@ -228,7 +228,7 @@ export function RepaymentSheet({
               <PopoverContent className="w-auto p-0" align="start">
                 <Calendar
                   mode="single"
-                  selected={form.data.date ? new Date(form.data.date) : undefined}
+                  selected={form.data.date ? parseLocalDate(form.data.date) : undefined}
                   onSelect={(date) => {
                     if (date) {
                       const year = date.getFullYear();

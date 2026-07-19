@@ -8,6 +8,7 @@ import { index as calendarIndex } from '@/actions/App/Http/Controllers/CalendarC
 import { SummaryCards } from './components/summary-cards';
 import { CollapsibleSummary } from '@/components/collapsible-summary';
 import { EventDrawer } from './components/event-drawer';
+import { toLocalDateString, localTodayString } from '@/lib/utils';
 
 interface Transaction {
   id: number;
@@ -159,7 +160,7 @@ export default function CalendarIndex({
     const map: Record<string, any[]> = {};
 
     const addEvent = (dateStr: string, event: any) => {
-      const formattedDateStr = new Date(dateStr).toISOString().split('T')[0];
+      const formattedDateStr = toLocalDateString(dateStr);
       if (!map[formattedDateStr]) map[formattedDateStr] = [];
       map[formattedDateStr].push(event);
     };
@@ -221,7 +222,7 @@ export default function CalendarIndex({
     setIsDrawerOpen(true);
   };
 
-  const todayStr = useMemo(() => new Date().toISOString().split('T')[0], []);
+  const todayStr = useMemo(() => localTodayString(), []);
 
   return (
     <>
