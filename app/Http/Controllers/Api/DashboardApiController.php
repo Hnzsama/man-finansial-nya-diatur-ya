@@ -31,9 +31,10 @@ class DashboardApiController extends Controller
             // Wallets
             $wallets = Wallet::where('user_id', $user->id)->get();
 
-            // Income / Expense in date range
+            // Income / Expense in date range (exclude Transfer Fund)
             $rangeTransactions = Transaction::where('user_id', $user->id)
                 ->whereBetween('date', [$startDate, $endDate])
+                ->withoutTransfers()
                 ->get();
 
             $income = $rangeTransactions->where('type', 'income')->sum('amount');
