@@ -235,7 +235,7 @@ export function buildXlsXml(
     <Table ss:ExpandedColumnCount="6" x:FullColumns="1" x:FullRows="1">
       <Column ss:Width="105"/><Column ss:Width="85"/><Column ss:Width="130"/>
       <Column ss:Width="130"/><Column ss:Width="140"/><Column ss:Width="200"/>
-      <Row ss:Height="36"><Cell ss:MergeAcross="5" ss:StyleID="s62"><Data ss:Type="String">FINANCE STATEMENT LEDGER REPORT</Data></Cell></Row>
+      <Row ss:Height="36"><Cell ss:MergeAcross="5" ss:StyleID="s62"><Data ss:Type="String">MAN FINANCE REPORT</Data></Cell></Row>
       <Row ss:Height="20"><Cell ss:MergeAcross="5" ss:StyleID="s63"><Data ss:Type="String">Generated — ${now}</Data></Cell></Row>
       <Row ss:Height="6"><Cell ss:StyleID="s60"></Cell></Row>
       <Row ss:Height="20">${xmlCell('Export Scope', 64)}<Cell ss:StyleID="s65"><Data ss:Type="String">${escapeXml(scope.toUpperCase())}</Data></Cell><Cell ss:StyleID="s60"></Cell>${xmlCell('Date Range', 64)}<Cell ss:MergeAcross="1" ss:StyleID="s65"><Data ss:Type="String">${escapeXml(dateFrom || 'N/A')} to ${escapeXml(dateTo || 'N/A')}</Data></Cell></Row>
