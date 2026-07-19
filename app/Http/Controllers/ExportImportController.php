@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\Subscription;
 use App\Models\Transaction;
 use App\Models\Wallet;
+use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -117,7 +118,17 @@ class ExportImportController extends Controller
                         continue;
                     }
 
-                    $date = $data['date'] ?? now()->format('Y-m-d');
+                    // Parse date and cap to today's date if it is in the future
+                    try {
+                        $parsedDate = Carbon::parse($data['date'] ?? now());
+                        if ($parsedDate->isFuture()) {
+                            $parsedDate = Carbon::today();
+                        }
+                        $date = $parsedDate->toDateString();
+                    } catch (\Exception $e) {
+                        $date = now()->format('Y-m-d');
+                    }
+
                     $type = strtolower(trim($data['type'] ?? 'expense'));
                     if (! in_array($type, ['income', 'expense'])) {
                         $type = 'expense';
