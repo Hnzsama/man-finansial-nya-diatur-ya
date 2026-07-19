@@ -168,7 +168,8 @@ export function ExportPanel({ wallets, realTransactions }: ExportPanelProps) {
       ? `${startDate}_sd_${endDate}`
       : `sd_${format(new Date(), 'yyyy-MM-dd')}`;
 
-    const filenameBase = `finance_report_${exportScope}_${dateStr}`;
+    const timeSuffix = format(new Date(), 'HHmmss');
+    const filenameBase = `finance_report_${exportScope}_${dateStr}_${timeSuffix}`;
 
     if (exportFormat === 'html') {
       const content = buildHtmlReport(exportScope, walletLabel, startDate, endDate, filteredRows);
