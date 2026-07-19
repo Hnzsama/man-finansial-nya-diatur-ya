@@ -288,8 +288,8 @@ export function CategorySheet({ isOpen, onOpenChange, mode, category, onSuccess 
         <ConfirmDialog
           open={showDeleteConfirm}
           onOpenChange={setShowDeleteConfirm}
-          title="Hapus Kategori"
-          description={`Apakah Anda yakin ingin menghapus kategori "${category.name}"? Semua transaksi yang terkait akan kehilangan kategorinya.`}
+          title="Delete Category"
+          description={`Are you sure you want to delete the category "${category.name}"? All associated transactions will lose their category.`}
           onConfirm={confirmDelete}
         />
       )}

@@ -204,8 +204,8 @@ export function AssetSheet({
         <ConfirmDialog
           open={showDeleteConfirm}
           onOpenChange={setShowDeleteConfirm}
-          title="Hapus Aset"
-          description={`Apakah Anda yakin ingin menghapus aset "${asset.name}"? Tindakan ini tidak dapat dibatalkan.`}
+          title="Delete Asset"
+          description={`Are you sure you want to delete the asset "${asset.name}"? This action cannot be undone.`}
           onConfirm={confirmDelete}
         />
       )}

@@ -384,8 +384,8 @@ export function DebtSheet({
         <ConfirmDialog
           open={showDeleteConfirm}
           onOpenChange={setShowDeleteConfirm}
-          title="Hapus Pinjaman / Hutang"
-          description={`Apakah Anda yakin ingin menghapus catatan pinjaman/hutang untuk "${debt.counterparty_name}"? Tindakan ini tidak dapat dibatalkan.`}
+          title="Delete Debt / Loan"
+          description={`Are you sure you want to delete the debt/loan record for "${debt.counterparty_name}"? This action cannot be undone.`}
           onConfirm={confirmDelete}
         />
       )}

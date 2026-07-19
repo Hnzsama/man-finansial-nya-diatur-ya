@@ -170,8 +170,8 @@ export default function TransactionsIndex({ transactions, wallets, categories, s
             <ConfirmDialog
                 open={!!deletingTransaction}
                 onOpenChange={(open) => !open && setDeletingTransaction(null)}
-                title="Hapus Transaksi"
-                description="Apakah Anda yakin ingin menghapus transaksi ini? Tindakan ini tidak dapat dibatalkan."
+                title="Delete Transaction"
+                description="Are you sure you want to delete this transaction? This action cannot be undone."
                 onConfirm={confirmDelete}
             />
         </>

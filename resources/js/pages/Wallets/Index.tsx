@@ -288,8 +288,8 @@ export default function Index({ wallets, stats }: { wallets: Wallet[], stats: St
             <ConfirmDialog
                 open={!!deletingWalletId}
                 onOpenChange={(open) => !open && setDeletingWalletId(null)}
-                title="Hapus Dompet"
-                description="Apakah Anda yakin ingin menghapus dompet ini? Semua transaksi yang terkait dengan dompet ini juga akan terhapus."
+                title="Delete Wallet"
+                description="Are you sure you want to delete this wallet? All associated transactions with this wallet will also be deleted."
                 onConfirm={confirmDelete}
             />
         </>

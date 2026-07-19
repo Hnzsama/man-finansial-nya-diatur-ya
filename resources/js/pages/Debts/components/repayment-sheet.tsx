@@ -167,17 +167,17 @@ export function RepaymentSheet({
           {debt && (
             <div className="p-3 rounded-lg bg-muted/40 border border-border/40 text-xs space-y-1">
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Total Utang:</span>
+                <span className="text-muted-foreground">Total Debt:</span>
                 <span className="font-semibold">{formatCurrency(debt.remaining_amount)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Pembayaran Ini:</span>
+                <span className="text-muted-foreground">Current Payment:</span>
                 <span className="font-semibold text-emerald-500">
                   -{formatCurrency(form.data.amount || 0)}
                 </span>
               </div>
               <div className="border-t border-border/30 my-1 pt-1 flex justify-between font-medium">
-                <span className="text-muted-foreground">Kekurangan:</span>
+                <span className="text-muted-foreground">Remaining Shortage:</span>
                 <span className={remainingShortage > 0 ? "text-orange-500 font-bold" : "text-emerald-500 font-bold"}>
                   {formatCurrency(remainingShortage)}
                 </span>

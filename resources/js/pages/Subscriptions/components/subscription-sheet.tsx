@@ -306,8 +306,8 @@ export function SubscriptionSheet({
         <ConfirmDialog
           open={showDeleteConfirm}
           onOpenChange={setShowDeleteConfirm}
-          title="Hapus Langganan"
-          description={`Apakah Anda yakin ingin menghapus langganan "${subscription.name}"? Tindakan ini tidak dapat dibatalkan.`}
+          title="Delete Subscription"
+          description={`Are you sure you want to delete the subscription "${subscription.name}"? This action cannot be undone.`}
           onConfirm={confirmDelete}
         />
       )}

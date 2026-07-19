@@ -15,6 +15,12 @@ import {
 import { cn } from "@/lib/utils"
 import { Button, buttonVariants } from "@/components/ui/button"
 
+/** Returns today's date based on local timezone (not UTC). */
+function getLocalToday(): Date {
+  const now = new Date()
+  return new Date(now.getFullYear(), now.getMonth(), now.getDate())
+}
+
 function Calendar({
   className,
   classNames,
@@ -31,6 +37,7 @@ function Calendar({
 
   return (
     <DayPicker
+      today={getLocalToday()}
       showOutsideDays={showOutsideDays}
       className={cn(
         "group/calendar bg-background p-3 [--cell-size:--spacing(8)] [[data-slot=card-content]_&]:bg-transparent [[data-slot=popover-content]_&]:bg-transparent",

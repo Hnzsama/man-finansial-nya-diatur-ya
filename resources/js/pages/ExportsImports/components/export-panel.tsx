@@ -115,7 +115,7 @@ function DateRangePicker({
             size="icon"
             className="h-9 w-9 flex-shrink-0 text-muted-foreground hover:text-destructive"
             onClick={() => onChange(undefined)}
-            title="Hapus rentang tanggal"
+            title="Clear date range"
           >
             <IconX className="h-4 w-4" />
           </Button>
@@ -124,7 +124,7 @@ function DateRangePicker({
 
       {value?.from && value?.to && (
         <p className="text-[11px] text-muted-foreground font-light">
-          {format(value.from, 'dd MMMM yyyy')} s/d {format(value.to, 'dd MMMM yyyy')}
+          {format(value.from, 'dd MMMM yyyy')} to {format(value.to, 'dd MMMM yyyy')}
         </p>
       )}
     </div>

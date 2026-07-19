@@ -23,23 +23,23 @@ export function ImportPanel() {
   const importForm = useForm({ csv_file: null as File | null });
 
   const handleDownloadTemplate = () => {
-    toast.success('Mengunduh template impor CSV...');
+    toast.success('Downloading CSV import template...');
     const lines = [
       '# FINANCE IMPORT TEMPLATE',
       '# ========================',
-      '# PETUNJUK:',
-      "# 1. Hapus baris komentar (#) sebelum import",
-      "# 2. Date: format YYYY-MM-DD",
-      "# 3. Type: 'income' atau 'expense'",
-      "# 4. Amount: angka tanpa pemisah ribuan",
-      "# 5. Category & Wallet: sesuai data di aplikasi",
+      '# INSTRUCTIONS:',
+      '# 1. Remove comment lines (#) before importing',
+      '# 2. Date: YYYY-MM-DD format',
+      "# 3. Type: 'income' or 'expense'",
+      '# 4. Amount: number without thousands separators',
+      '# 5. Category & Wallet: matches the data in the application',
       '# ========================',
       'Date,Type,Amount,Category,Wallet,Notes',
-      '2026-07-01,income,12000000,Salary,Savings Wallet,Gaji Juli 2026',
-      '2026-07-05,expense,50000,Food & Dining,Cash,Makan siang',
-      '2026-07-10,expense,200000,Transportation,Cash,Bensin motor',
-      '2026-07-15,income,500000,Freelance,BCA Wallet,Honorarium desain',
-      '2026-07-20,expense,350000,Shopping,BCA Wallet,Belanja kebutuhan',
+      '2026-07-01,income,12000000,Salary,Savings Wallet,July 2026 Salary',
+      '2026-07-05,expense,50000,Food & Dining,Cash,Lunch',
+      '2026-07-10,expense,200000,Transportation,Cash,Motorcycle petrol',
+      '2026-07-15,income,500000,Freelance,BCA Wallet,Design freelance honor',
+      '2026-07-20,expense,350000,Shopping,BCA Wallet,Groceries shopping',
     ].join('\n');
     downloadBlob(lines, 'finance_import_template.csv', 'text/csv;charset=utf-8;');
   };

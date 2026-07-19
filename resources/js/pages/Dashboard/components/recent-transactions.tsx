@@ -506,8 +506,8 @@ export function RecentTransactions({ data, wallets }: { data: Transaction[], wal
       <ConfirmDialog
         open={!!deletingTransactionId}
         onOpenChange={(open) => !open && setDeletingTransactionId(null)}
-        title="Hapus Transaksi"
-        description="Apakah Anda yakin ingin menghapus transaksi ini? Tindakan ini tidak dapat dibatalkan."
+        title="Delete Transaction"
+        description="Are you sure you want to delete this transaction? This action cannot be undone."
         onConfirm={confirmDelete}
       />
     </Tabs>

@@ -21,6 +21,12 @@ import {
 import { cn } from '@/lib/utils';
 import type { Wallet, Category, Transaction } from '@/types';
 
+/** Parse a YYYY-MM-DD string as local midnight to avoid UTC offset issues. */
+function parseLocalDate(dateStr: string): Date {
+    const [year, month, day] = dateStr.split('-').map(Number);
+    return new Date(year, month - 1, day);
+}
+
 const DynamicIcon = ({ name, className }: { name?: string | null; className?: string }) => {
     if (!name) {
 return <LucideIcons.Folder className={className} />;
@@ -309,13 +315,13 @@ export function TransactionSheet({
                                     )}
                                 >
                                     <LucideIcons.Calendar className="mr-2 h-4 w-4" />
-                                    {data.date ? format(new Date(data.date), "PPP") : <span>Pick a date</span>}
+                                    {data.date ? format(parseLocalDate(data.date), "PPP") : <span>Pick a date</span>}
                                 </Button>
                             </PopoverTrigger>
                             <PopoverContent className="w-auto p-0" align="start">
                                 <Calendar
                                     mode="single"
-                                    selected={data.date ? new Date(data.date) : undefined}
+                                    selected={data.date ? parseLocalDate(data.date) : undefined}
                                     onSelect={(date) => setData('date', date ? format(date, 'yyyy-MM-dd') : '')}
                                 />
                             </PopoverContent>

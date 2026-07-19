@@ -262,8 +262,8 @@ export function GoalSheet({ isOpen, onOpenChange, mode, goal, onSuccess }: GoalS
         <ConfirmDialog
           open={showDeleteConfirm}
           onOpenChange={setShowDeleteConfirm}
-          title="Hapus Target"
-          description={`Apakah Anda yakin ingin menghapus target finansial "${goal.name}"? Tindakan ini tidak dapat dibatalkan.`}
+          title="Delete Goal"
+          description={`Are you sure you want to delete the financial goal "${goal.name}"? This action cannot be undone.`}
           onConfirm={confirmDelete}
         />
       )}
