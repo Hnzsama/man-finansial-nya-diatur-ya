@@ -164,20 +164,24 @@ export function ExportPanel({ wallets, realTransactions }: ExportPanelProps) {
         ? 'All Wallet Accounts'
         : (wallets.find((w) => w.id.toString() === selectedWallet)?.name ?? 'Selected Wallet');
 
-    const suffix = `${exportScope}_${startDate || 'all'}_to_${endDate || 'now'}`;
+    const dateStr = startDate && endDate
+      ? `${startDate}_sd_${endDate}`
+      : `sd_${format(new Date(), 'yyyy-MM-dd')}`;
+
+    const filenameBase = `finance_report_${exportScope}_${dateStr}`;
 
     if (exportFormat === 'html') {
       const content = buildHtmlReport(exportScope, walletLabel, startDate, endDate, filteredRows);
-      downloadBlob(content, `finance_report_${suffix}.html`, 'text/html;charset=utf-8');
+      downloadBlob(content, `${filenameBase}.html`, 'text/html;charset=utf-8');
     } else if (exportFormat === 'xlsx') {
       const content = buildXlsXml(exportScope, walletLabel, startDate, endDate, filteredRows);
-      downloadBlob(content, `finance_report_${suffix}.xls`, 'application/vnd.ms-excel');
+      downloadBlob(content, `${filenameBase}.xls`, 'application/vnd.ms-excel');
     } else {
       const headers = 'Date,Type,Amount,Category,Wallet,Notes\n';
       const csvRows = filteredRows.map(
         (r) => `${r.date},${r.type},${r.amount},${r.category},${r.wallet},${r.notes}`,
       ).join('\n');
-      downloadBlob(headers + csvRows, `finance_report_${suffix}.csv`, 'text/csv');
+      downloadBlob(headers + csvRows, `${filenameBase}.csv`, 'text/csv');
     }
   };
 
