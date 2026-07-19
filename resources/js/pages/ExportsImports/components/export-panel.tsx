@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { format } from 'date-fns';
 import type { DateRange } from 'react-day-picker';
-import { IconCloudDownload, IconFileSpreadsheet, IconChartBar, IconCalendar, IconX } from '@tabler/icons-react';
+import { IconCloudDownload, IconFileSpreadsheet, IconChartBar, IconCalendar, IconX, IconFileText } from '@tabler/icons-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
@@ -174,6 +174,19 @@ export function ExportPanel({ wallets, realTransactions }: ExportPanelProps) {
     if (exportFormat === 'html') {
       const content = buildHtmlReport(exportScope, walletLabel, startDate, endDate, filteredRows);
       downloadBlob(content, `${filenameBase}.html`, 'text/html;charset=utf-8');
+    } else if (exportFormat === 'pdf') {
+      const content = buildHtmlReport(exportScope, walletLabel, startDate, endDate, filteredRows);
+      const printWindow = window.open('', '_blank');
+      if (printWindow) {
+        printWindow.document.write(content);
+        printWindow.document.close();
+        printWindow.onload = () => {
+          printWindow.print();
+        };
+        setTimeout(() => {
+          printWindow.print();
+        }, 1000);
+      }
     } else if (exportFormat === 'xlsx') {
       const content = buildXlsXml(exportScope, walletLabel, startDate, endDate, filteredRows);
       downloadBlob(content, `${filenameBase}.xls`, 'application/vnd.ms-excel');
@@ -243,6 +256,12 @@ export function ExportPanel({ wallets, realTransactions }: ExportPanelProps) {
                   HTML Report + Charts (.html)
                 </span>
               </SelectItem>
+              <SelectItem value="pdf">
+                <span className="flex items-center gap-2">
+                  <IconFileText className="h-3.5 w-3.5 text-rose-500 flex-shrink-0" />
+                  PDF Document (.pdf)
+                </span>
+              </SelectItem>
               <SelectItem value="xlsx">
                 <span className="flex items-center gap-2">
                   <IconFileSpreadsheet className="h-3.5 w-3.5 text-green-600 dark:text-green-400 flex-shrink-0" />
@@ -265,6 +284,15 @@ export function ExportPanel({ wallets, realTransactions }: ExportPanelProps) {
             <span>
               Berisi <strong className="text-foreground">bar chart tren bulanan</strong> dan{' '}
               <strong className="text-foreground">donut chart kategori</strong>. Buka di browser lalu simpan sebagai PDF.
+            </span>
+          </div>
+        )}
+
+        {exportFormat === 'pdf' && (
+          <div className="flex items-start gap-2 text-xs text-muted-foreground bg-muted/30 rounded-lg px-3 py-2 border border-border/40">
+            <IconFileText className="h-3.5 w-3.5 text-rose-500 flex-shrink-0 mt-0.5" />
+            <span>
+              Laporan interaktif dengan grafik yang dioptimalkan untuk cetak PDF. Pilih opsi <strong className="text-foreground">Save as PDF</strong> di dialog cetak browser Anda.
             </span>
           </div>
         )}
