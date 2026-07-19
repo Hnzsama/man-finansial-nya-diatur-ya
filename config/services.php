@@ -35,4 +35,10 @@ return [
         ],
     ],
 
+    'whatsapp' => [
+        'url' => env('WHATSAPP_API_URL', 'http://127.0.0.1:3000'),
+        'token' => env('WHATSAPP_API_TOKEN'),
+        'notify_number' => env('WHATSAPP_NOTIFY_NUMBER'),
+    ],
+
 ];
