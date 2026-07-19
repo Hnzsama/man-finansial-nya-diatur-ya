@@ -23,14 +23,7 @@ interface ExportPanelProps {
   realTransactions: any[];
 }
 
-const SAMPLE_ROWS: (XlsRow & HtmlReportRow)[] = [
-  { date: '2026-07-01', type: 'expense', amount: 50000, category: 'Food & Dining', wallet: 'Cash', notes: 'Makan siang' },
-  { date: '2026-07-05', type: 'expense', amount: 200000, category: 'Transportation', wallet: 'Cash', notes: 'Bensin motor' },
-  { date: '2026-07-08', type: 'income', amount: 500000, category: 'Freelance', wallet: 'BCA Wallet', notes: 'Honorarium desain' },
-  { date: '2026-07-10', type: 'expense', amount: 350000, category: 'Shopping', wallet: 'BCA Wallet', notes: 'Belanja kebutuhan' },
-  { date: '2026-07-12', type: 'expense', amount: 75000, category: 'Entertainment', wallet: 'Cash', notes: 'Nonton bioskop' },
-  { date: '2026-07-16', type: 'income', amount: 12000000, category: 'Salary', wallet: 'Savings Wallet', notes: 'Gaji bulanan' },
-];
+
 
 function downloadBlob(content: string, filename: string, mime: string) {
   const blob = new Blob([content], { type: mime });
