@@ -57,7 +57,7 @@ export const useTransactionColumns = ({ openEditSheet, handleDelete }: Transacti
             accessorKey: "date",
             header: "Date",
             cell: ({ row }) => {
-                return <div className="font-medium whitespace-nowrap">{format(new Date(row.original.date), 'dd MMM yyyy')}</div>;
+                return <div className="font-medium whitespace-nowrap">{format(new Date(row.original.date), 'dd MMM yyyy HH:mm')}</div>;
             },
         },
         {

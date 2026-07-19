@@ -220,7 +220,7 @@ const getColumns = (onDelete: (id: number) => void): ColumnDef<Transaction>[] =>
     header: "Date",
     cell: ({ row }) => {
       const date = new Date(row.original.date);
-      return date.toLocaleDateString("en-US", { day: 'numeric', month: 'short', year: 'numeric' });
+      return date.toLocaleDateString("en-US", { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false });
     }
   },
   {

@@ -59,7 +59,7 @@ export function TransactionSheet({
         category_id: transaction?.category_id?.toString() || '',
         type: transaction?.type || 'expense',
         amount: transaction?.amount || '',
-        date: transaction ? transaction.date.split(' ')[0] : new Date().toISOString().split('T')[0],
+        date: transaction ? transaction.date.split(/[ T]/)[0] : new Date().toISOString().split('T')[0],
         notes: transaction?.notes || '',
     });
 
@@ -95,7 +95,7 @@ export function TransactionSheet({
                     category_id: transaction.category_id?.toString() || '',
                     type: transaction.type,
                     amount: transaction.amount,
-                    date: transaction.date.split(' ')[0],
+                    date: transaction.date.split(/[ T]/)[0],
                     notes: transaction.notes || '',
                 });
             } else if (mode === 'add') {

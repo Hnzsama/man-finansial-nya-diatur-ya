@@ -165,6 +165,10 @@ class TransactionController extends Controller
             'notes' => ['nullable', 'string', 'max:500'],
         ]);
 
+        $validated['date'] = Carbon::parse($validated['date'], 'Asia/Jakarta')
+            ->setTimeFrom(Carbon::now('Asia/Jakarta'))
+            ->utc();
+
         try {
             DB::transaction(function () use ($validated, $request) {
                 $wallet = Wallet::where('id', $validated['wallet_id'])
@@ -215,6 +219,10 @@ class TransactionController extends Controller
             'date' => ['required', 'date'],
             'notes' => ['nullable', 'string', 'max:500'],
         ]);
+
+        $validated['date'] = Carbon::parse($validated['date'], 'Asia/Jakarta')
+            ->setTimeFrom(Carbon::now('Asia/Jakarta'))
+            ->utc();
 
         try {
             DB::transaction(function () use ($validated, $transaction, $request) {

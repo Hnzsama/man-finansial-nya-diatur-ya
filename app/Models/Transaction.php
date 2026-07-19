@@ -27,7 +27,7 @@ class Transaction extends Model
     ];
 
     protected $casts = [
-        'date' => 'date',
+        'date' => 'datetime',
         'amount' => 'decimal:2',
         'metadata' => 'array',
     ];
@@ -69,7 +69,7 @@ class Transaction extends Model
             $categoryName = $transaction->category?->name ?? 'No Category';
             $typeLabel = $transaction->type === 'income' ? 'Pemasukan' : 'Pengeluaran';
             $formattedAmount = number_format((float) $transaction->amount, 0, ',', '.');
-            $dateFormatted = $transaction->date ? $transaction->date->format('d-m-Y') : now()->format('d-m-Y');
+            $dateFormatted = $transaction->date ? $transaction->date->timezone('Asia/Jakarta')->format('d-m-Y H:i') : now('Asia/Jakarta')->format('d-m-Y H:i');
 
             $message = "🔔 *Notifikasi Transaksi Baru*\n\n"
                      . "🏷️ *Tipe:* {$typeLabel}\n"
