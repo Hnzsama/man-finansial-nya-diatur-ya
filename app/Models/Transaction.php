@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Jobs\SendWhatsAppNotification;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -72,29 +74,33 @@ class Transaction extends Model
             $dateFormatted = $transaction->date ? $transaction->date->timezone('Asia/Jakarta')->format('d-m-Y H:i') : now('Asia/Jakarta')->format('d-m-Y H:i');
 
             $message = "🔔 *Notifikasi Transaksi Baru*\n\n"
-                     . "🏷️ *Tipe:* {$typeLabel}\n"
-                     . "💰 *Jumlah:* Rp {$formattedAmount}\n"
-                     . "💳 *Dompet:* {$walletName}\n"
-                     . "📁 *Kategori:* {$categoryName}\n"
-                     . "📅 *Tanggal:* {$dateFormatted}\n"
-                     . "📝 *Catatan:* " . ($transaction->notes ?: '-') . "\n\n"
-                     . "Man Finance - Diatur ya keuangannya! 💪";
+                     ."🏷️ *Tipe:* {$typeLabel}\n"
+                     ."💰 *Jumlah:* Rp {$formattedAmount}\n"
+                     ."💳 *Dompet:* {$walletName}\n"
+                     ."📁 *Kategori:* {$categoryName}\n"
+                     ."📅 *Tanggal:* {$dateFormatted}\n"
+                     .'📝 *Catatan:* '.($transaction->notes ?: '-')."\n\n"
+                     .'Man Finance - Diatur ya keuangannya! 💪';
 
-            dispatch(new \App\Jobs\SendWhatsAppNotification($message));
+            dispatch(new SendWhatsAppNotification($message));
         });
     }
 
     /**
      * Scope a query to only include non-transfer transactions.
      *
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @param  Builder  $query
+     * @return Builder
      */
     public function scopeWithoutTransfers($query)
     {
-        return $query->where(function ($q) {
-            $q->whereNull('metadata->is_transfer')
-              ->orWhere('metadata->is_transfer', '!=', true);
-        });
+        return $query
+            ->where(function ($q) {
+                $q->whereNull('metadata->is_transfer')
+                    ->orWhere('metadata->is_transfer', '!=', true);
+            })
+            ->whereDoesntHave('category', function ($q) {
+                $q->where('name', 'Transfer Fund');
+            });
     }
 }
