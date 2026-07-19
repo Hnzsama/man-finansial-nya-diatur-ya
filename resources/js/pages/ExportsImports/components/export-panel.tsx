@@ -132,9 +132,9 @@ function DateRangePicker({
 }
 
 export function ExportPanel({ wallets, realTransactions }: ExportPanelProps) {
-  const [exportScope, setExportScope] = useState('all');
+  const [selectedScopes, setSelectedScopes] = useState<string[]>(['transactions', 'debts', 'goals', 'subscriptions']);
   const [exportFormat, setExportFormat] = useState('html');
-  const [selectedWallet, setSelectedWallet] = useState('all');
+  const [selectedWallets, setSelectedWallets] = useState<string[]>(['all']);
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
 
   // Advanced PDF Export Options
@@ -147,12 +147,38 @@ export function ExportPanel({ wallets, realTransactions }: ExportPanelProps) {
   const endDate = dateRange?.to ? format(dateRange.to, 'yyyy-MM-dd') : '';
 
   const handleExport = () => {
+    if (selectedScopes.length === 0) {
+      toast.error('Pilih setidaknya satu cakupan (scope) ekspor!');
+      return;
+    }
+
     // Filter real user transactions based on current UI settings
     const filteredRows = realTransactions.filter((row) => {
-      // Filter by wallet account
-      if (selectedWallet !== 'all' && row.wallet_id?.toString() !== selectedWallet) {
+      // 1. Filter by scope (multi-select)
+      let matchesScope = false;
+      if (selectedScopes.includes('transactions') && !row.goal_id && !row.debt_id && !row.is_subscription) {
+        matchesScope = true;
+      }
+      if (selectedScopes.includes('debts') && row.debt_id) {
+        matchesScope = true;
+      }
+      if (selectedScopes.includes('goals') && row.goal_id) {
+        matchesScope = true;
+      }
+      if (selectedScopes.includes('subscriptions') && row.is_subscription) {
+        matchesScope = true;
+      }
+      if (!matchesScope) {
         return false;
       }
+
+      // 2. Filter by wallet account (multi-select)
+      if (selectedWallets.length > 0 && !selectedWallets.includes('all')) {
+        if (!row.wallet_id || !selectedWallets.includes(row.wallet_id.toString())) {
+          return false;
+        }
+      }
+
       // Filter by date range constraints
       if (startDate && row.date < startDate) {
         return false;
@@ -164,25 +190,29 @@ export function ExportPanel({ wallets, realTransactions }: ExportPanelProps) {
     });
 
     const rangeMsg = startDate && endDate ? ` ${startDate} s/d ${endDate}` : ' (semua data)';
-    toast.success(`Mengekspor ${exportScope}${rangeMsg} format ${exportFormat.toUpperCase()}...`);
+    const scopeLabel = selectedScopes.length === 4 ? 'Semua Ledger' : selectedScopes.join(', ');
+    toast.success(`Mengekspor ${scopeLabel}${rangeMsg} format ${exportFormat.toUpperCase()}...`);
 
     const walletLabel =
-      selectedWallet === 'all'
+      selectedWallets.includes('all') || selectedWallets.length === 0
         ? 'All Wallet Accounts'
-        : (wallets.find((w) => w.id.toString() === selectedWallet)?.name ?? 'Selected Wallet');
+        : wallets
+            .filter((w) => selectedWallets.includes(w.id.toString()))
+            .map((w) => w.name)
+            .join(', ');
 
     const dateStr = startDate && endDate
       ? `${startDate}_sd_${endDate}`
       : `sd_${format(new Date(), 'yyyy-MM-dd')}`;
 
     const timeSuffix = format(new Date(), 'HHmmss');
-    const filenameBase = `finance_report_${exportScope}_${dateStr}_${timeSuffix}`;
+    const filenameBase = `finance_report_${selectedScopes.join('_')}_${dateStr}_${timeSuffix}`;
 
     if (exportFormat === 'html') {
-      const content = buildHtmlReport(exportScope, walletLabel, startDate, endDate, filteredRows, { orientation, includeCharts, includeStats, includeTable });
+      const content = buildHtmlReport(scopeLabel, walletLabel, startDate, endDate, filteredRows, { orientation, includeCharts, includeStats, includeTable });
       downloadBlob(content, `${filenameBase}.html`, 'text/html;charset=utf-8');
     } else if (exportFormat === 'pdf') {
-      const content = buildHtmlReport(exportScope, walletLabel, startDate, endDate, filteredRows, { orientation, includeCharts, includeStats, includeTable });
+      const content = buildHtmlReport(scopeLabel, walletLabel, startDate, endDate, filteredRows, { orientation, includeCharts, includeStats, includeTable });
       const printWindow = window.open('', '_blank');
       if (printWindow) {
         printWindow.document.write(content);
@@ -195,7 +225,7 @@ export function ExportPanel({ wallets, realTransactions }: ExportPanelProps) {
         }, 1000);
       }
     } else if (exportFormat === 'xlsx') {
-      const content = buildXlsXml(exportScope, walletLabel, startDate, endDate, filteredRows);
+      const content = buildXlsXml(scopeLabel, walletLabel, startDate, endDate, filteredRows);
       downloadBlob(content, `${filenameBase}.xls`, 'application/vnd.ms-excel');
     } else {
       const headers = 'Date,Type,Amount,Category,Wallet,Notes\n';
@@ -217,35 +247,90 @@ export function ExportPanel({ wallets, realTransactions }: ExportPanelProps) {
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="scope">Export Scope</Label>
-          <Select value={exportScope} onValueChange={setExportScope}>
-            <SelectTrigger id="scope">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Complete Database (All Ledgers)</SelectItem>
-              <SelectItem value="transactions">Transactions Only</SelectItem>
-              <SelectItem value="debts">Debts &amp; Loans</SelectItem>
-              <SelectItem value="goals">Goals Milestones</SelectItem>
-            </SelectContent>
-          </Select>
+          <Label>Export Scope (Bisa Multi-Select)</Label>
+          <div className="grid grid-cols-2 gap-3 p-3 rounded-lg border border-border/50 bg-background/30">
+            <label className="flex items-center gap-2 text-xs md:text-sm font-medium cursor-pointer select-none">
+              <Checkbox
+                checked={selectedScopes.includes('transactions')}
+                onCheckedChange={(checked) => {
+                  setSelectedScopes((prev) =>
+                    checked ? [...prev, 'transactions'] : prev.filter((s) => s !== 'transactions')
+                  );
+                }}
+              />
+              Transactions Only
+            </label>
+            <label className="flex items-center gap-2 text-xs md:text-sm font-medium cursor-pointer select-none">
+              <Checkbox
+                checked={selectedScopes.includes('debts')}
+                onCheckedChange={(checked) => {
+                  setSelectedScopes((prev) =>
+                    checked ? [...prev, 'debts'] : prev.filter((s) => s !== 'debts')
+                  );
+                }}
+              />
+              Debts &amp; Loans
+            </label>
+            <label className="flex items-center gap-2 text-xs md:text-sm font-medium cursor-pointer select-none">
+              <Checkbox
+                checked={selectedScopes.includes('goals')}
+                onCheckedChange={(checked) => {
+                  setSelectedScopes((prev) =>
+                    checked ? [...prev, 'goals'] : prev.filter((s) => s !== 'goals')
+                  );
+                }}
+              />
+              Goals Milestones
+            </label>
+            <label className="flex items-center gap-2 text-xs md:text-sm font-medium cursor-pointer select-none">
+              <Checkbox
+                checked={selectedScopes.includes('subscriptions')}
+                onCheckedChange={(checked) => {
+                  setSelectedScopes((prev) =>
+                    checked ? [...prev, 'subscriptions'] : prev.filter((s) => s !== 'subscriptions')
+                  );
+                }}
+              />
+              Langganan (Subscriptions)
+            </label>
+          </div>
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="wallet-filter">Wallet Scope</Label>
-          <Select value={selectedWallet} onValueChange={setSelectedWallet}>
-            <SelectTrigger id="wallet-filter">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Wallet Accounts</SelectItem>
-              {wallets.map((w) => (
-                <SelectItem key={w.id} value={w.id.toString()}>
-                  {w.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <Label>Wallet Scope (Bisa Multi-Select)</Label>
+          <div className="flex flex-wrap gap-2 p-3 rounded-lg border border-border/50 bg-background/30 max-h-40 overflow-y-auto">
+            <label className="flex items-center gap-2 text-xs md:text-sm font-medium cursor-pointer select-none bg-accent/40 px-3 py-1.5 rounded-md">
+              <Checkbox
+                checked={selectedWallets.includes('all') || selectedWallets.length === 0}
+                onCheckedChange={(checked) => {
+                  if (checked) {
+                    setSelectedWallets(['all']);
+                  } else {
+                    setSelectedWallets([]);
+                  }
+                }}
+              />
+              All Wallets
+            </label>
+            {wallets.map((w) => (
+              <label key={w.id} className="flex items-center gap-2 text-xs md:text-sm font-medium cursor-pointer select-none bg-accent/40 px-3 py-1.5 rounded-md">
+                <Checkbox
+                  checked={selectedWallets.includes(w.id.toString()) && !selectedWallets.includes('all')}
+                  onCheckedChange={(checked) => {
+                    setSelectedWallets((prev) => {
+                      const withoutAll = prev.filter((id) => id !== 'all');
+                      if (checked) {
+                        return [...withoutAll, w.id.toString()];
+                      } else {
+                        return withoutAll.filter((id) => id !== w.id.toString());
+                      }
+                    });
+                  }}
+                />
+                {w.name}
+              </label>
+            ))}
+          </div>
         </div>
 
         <DateRangePicker value={dateRange} onChange={setDateRange} />

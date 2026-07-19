@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\Subscription;
 use App\Models\Transaction;
 use App\Models\Wallet;
 use Illuminate\Http\RedirectResponse;
@@ -37,12 +38,35 @@ class ExportImportController extends Controller
                     'wallet' => $tx->wallet?->name ?? '-',
                     'wallet_id' => $tx->wallet_id,
                     'notes' => $tx->notes ?? '',
+                    'goal_id' => $tx->goal_id,
+                    'debt_id' => $tx->debt_id,
                 ];
             });
 
+        // Fetch subscriptions to allow exporting them under 'subscriptions' scope
+        $subscriptions = Subscription::with(['wallet', 'category'])
+            ->where('user_id', $user->id)
+            ->get()
+            ->map(function ($sub) {
+                return [
+                    'date' => $sub->next_billing_date ? $sub->next_billing_date->toIso8601String() : '',
+                    'type' => 'expense',
+                    'amount' => (float) $sub->amount,
+                    'category' => $sub->category?->name ?? 'Subscription',
+                    'wallet' => $sub->wallet?->name ?? '-',
+                    'wallet_id' => $sub->wallet_id,
+                    'notes' => 'Langganan: '.$sub->name.($sub->notes ? ' ('.$sub->notes.')' : ''),
+                    'is_subscription' => true,
+                    'goal_id' => null,
+                    'debt_id' => null,
+                ];
+            });
+
+        $mergedTransactions = $transactions->concat($subscriptions);
+
         return Inertia::render('ExportsImports/Index', [
             'wallets' => $wallets,
-            'realTransactions' => $transactions,
+            'realTransactions' => $mergedTransactions,
         ]);
     }
 
