@@ -51,8 +51,8 @@ function DateRangePicker({
     value?.from && value?.to
       ? `${format(value.from, 'dd MMM yyyy')} — ${format(value.to, 'dd MMM yyyy')}`
       : value?.from
-        ? `${format(value.from, 'dd MMM yyyy')} — pilih akhir`
-        : 'Pilih rentang tanggal';
+        ? `${format(value.from, 'dd MMM yyyy')} — pick end date`
+        : 'Select date range';
 
   const hasValue = !!value?.from;
 
@@ -91,8 +91,8 @@ function DateRangePicker({
             <div className="border-t border-border/50 px-3 py-2 flex justify-between items-center">
               <span className="text-xs text-muted-foreground">
                 {value?.from && value?.to
-                  ? `${Math.round((value.to.getTime() - value.from.getTime()) / 86400000) + 1} hari dipilih`
-                  : 'Klik tanggal mulai lalu akhir'}
+                  ? `${Math.round((value.to.getTime() - value.from.getTime()) / 86400000) + 1} days selected`
+                  : 'Click start date then end date'}
               </span>
               <Button
                 variant="ghost"
@@ -154,6 +154,11 @@ export function ExportPanel({ wallets, realTransactions }: ExportPanelProps) {
 
     // Filter real user transactions based on current UI settings
     const filteredRows = realTransactions.filter((row) => {
+      // Exclude Transfer Fund transactions entirely from exports
+      if (row.category === 'Transfer Fund') {
+        return false;
+      }
+
       // 1. Filter by scope (multi-select)
       let matchesScope = false;
       if (selectedScopes.includes('transactions') && !row.goal_id && !row.debt_id && !row.is_subscription) {
@@ -228,7 +233,7 @@ export function ExportPanel({ wallets, realTransactions }: ExportPanelProps) {
       const content = buildXlsXml(scopeLabel, walletLabel, startDate, endDate, filteredRows);
       downloadBlob(content, `${filenameBase}.xls`, 'application/vnd.ms-excel');
     } else {
-      const headers = 'Date,Type,Amount,Category,Wallet,Notes\n';
+      const headers = '# Note: Transfer Fund (internal wallet transfers) are excluded from this export.\nDate,Type,Amount,Category,Wallet,Notes\n';
       const csvRows = filteredRows.map(
         (r) => `${r.date},${r.type},${r.amount},${r.category},${r.wallet},${r.notes}`,
       ).join('\n');

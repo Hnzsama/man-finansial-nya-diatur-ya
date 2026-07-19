@@ -21,7 +21,6 @@ class CalendarController extends Controller
 
         // 1. Get transactions (limit to past 6 months and next 1 month to keep response size optimal)
         $transactions = Transaction::where('user_id', $user->id)
-            ->withoutTransfers()
             ->with(['wallet:id,name', 'category:id,name,type'])
             ->whereDate('date', '>=', now()->subMonths(6))
             ->whereDate('date', '<=', now()->addMonth())

@@ -87,7 +87,7 @@ class ExportImportController extends Controller
         try {
             $handle = fopen($path, 'r');
             if ($handle === false) {
-                return redirect()->back()->withErrors(['csv_file' => 'Gagal membuka file CSV.']);
+                return redirect()->back()->withErrors(['csv_file' => 'Failed to open the CSV file.']);
             }
 
             $header = null;
@@ -205,11 +205,11 @@ class ExportImportController extends Controller
 
             fclose($handle);
 
-            return redirect()->back()->with('success', "Berhasil mengimpor {$rowCount} catatan transaksi riil ke database.");
+            return redirect()->back()->with('success', "Successfully imported {$rowCount} transaction records into the database.");
         } catch (\Exception $e) {
-            Log::error('Gagal mengimpor CSV: '.$e->getMessage());
+            Log::error('Failed to import CSV: '.$e->getMessage());
 
-            return redirect()->back()->withErrors(['csv_file' => 'Gagal memproses file CSV: '.$e->getMessage()]);
+            return redirect()->back()->withErrors(['csv_file' => 'Failed to process the CSV file: '.$e->getMessage()]);
         }
     }
 }

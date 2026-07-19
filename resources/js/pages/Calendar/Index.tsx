@@ -166,6 +166,9 @@ export default function CalendarIndex({
     };
 
     transactions.forEach((tx) => {
+      // Skip Transfer Fund entries — internal wallet movements, not real income/expense
+      if (tx.category?.name === 'Transfer Fund') return;
+
       addEvent(tx.date, {
         id: tx.id,
         type: tx.type,
@@ -173,6 +176,7 @@ export default function CalendarIndex({
         amount: typeof tx.amount === 'string' ? parseFloat(tx.amount) : tx.amount,
         subtitle: `${tx.wallet?.name || 'Wallet'} • ${tx.category?.name || 'General'}`,
         notes: tx.notes,
+        categoryName: tx.category?.name,
       });
     });
 

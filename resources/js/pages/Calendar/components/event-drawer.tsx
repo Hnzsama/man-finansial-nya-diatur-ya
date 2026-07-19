@@ -16,6 +16,7 @@ interface EventItem {
   amount: number;
   subtitle?: string;
   notes?: string | null;
+  categoryName?: string;
 }
 
 interface EventDrawerProps {
@@ -35,7 +36,10 @@ export function EventDrawer({
 }: EventDrawerProps) {
   const formattedDate = React.useMemo(() => {
     if (!selectedDate) return '';
-    return new Date(selectedDate).toLocaleDateString('en-US', {
+    // Parse YYYY-MM-DD as local midnight to avoid UTC offset shifting the date
+    const [y, m, d] = selectedDate.split('-').map(Number);
+    const localDate = new Date(y, m - 1, d);
+    return localDate.toLocaleDateString('en-US', {
       weekday: 'long',
       year: 'numeric',
       month: 'long',

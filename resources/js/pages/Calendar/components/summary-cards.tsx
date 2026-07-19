@@ -12,6 +12,7 @@ interface Transaction {
   type: 'income' | 'expense';
   amount: number | string;
   date: string;
+  category?: { name: string };
 }
 
 interface Goal {
@@ -60,8 +61,10 @@ export function SummaryCards({
     let dueDebtsCount = 0;
     let dueSubCost = 0;
 
-    // Filter transactions in visible month
+    // Filter transactions in visible month (excluding Transfer Fund)
     transactions.forEach((tx) => {
+      if (tx.category?.name === 'Transfer Fund') return;
+      
       const date = new Date(tx.date);
       if (date.getMonth() === currentMonth && date.getFullYear() === currentYear) {
         const amt = typeof tx.amount === 'string' ? parseFloat(tx.amount) : tx.amount;

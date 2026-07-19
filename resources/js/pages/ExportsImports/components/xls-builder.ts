@@ -251,6 +251,7 @@ export function buildXlsXml(
       <Row ss:Height="20">${xmlCell('Date', 71)}${xmlCell('Type', 71)}${xmlCell('Amount (IDR)', 71)}${xmlCell('Category', 71)}${xmlCell('Wallet', 71)}${xmlCell('Notes', 71)}</Row>
       ${transactionRows}
       <Row ss:Height="6"><Cell ss:StyleID="s60"></Cell></Row>
+      <Row ss:Height="16"><Cell ss:MergeAcross="5" ss:StyleID="s76"><Data ss:Type="String">* Transfer Fund transactions are excluded from all figures and ledger entries above.</Data></Cell></Row>
       <Row ss:Height="16"><Cell ss:MergeAcross="5" ss:StyleID="s76"><Data ss:Type="String">Auto-generated report. Verify against official bank statements.</Data></Cell></Row>
     </Table>
   </Worksheet>

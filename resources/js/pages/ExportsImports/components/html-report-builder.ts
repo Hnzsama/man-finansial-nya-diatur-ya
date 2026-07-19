@@ -204,6 +204,7 @@ export function buildHtmlReport(
       <div class="meta-item">Scope: <strong>${scope.toUpperCase()}</strong></div>
       <div class="meta-item">Period: <strong>${dateFrom || 'All'} to ${dateTo || 'Present'}</strong></div>
       <div class="meta-item">Wallet: <strong>${walletLabel}</strong></div>
+      <div class="meta-item" style="color:#d97706;font-weight:500;">&#9888; Transfer Fund transactions excluded</div>
     </div>
     
     ${includeStats ? `
@@ -259,7 +260,7 @@ export function buildHtmlReport(
     </div>
     ` : ''}
     
-    <div class="footer">Auto-generated report. Verify against official bank statements.</div>
+    <div class="footer">* Transfer Fund (internal wallet-to-wallet transfers) are excluded from all totals and transaction entries in this report. &nbsp;|&nbsp; Auto-generated report. Verify against official bank statements.</div>
   </div>
 </body>
 </html>`;
