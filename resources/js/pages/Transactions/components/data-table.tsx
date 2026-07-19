@@ -98,54 +98,54 @@ export function DataTable<TData, TValue>({
             </div>
             {pagination && (
                 <div className="flex flex-col sm:flex-row items-center justify-between p-4 gap-4 border-t border-border/40 bg-card/30">
-                    <div className="text-sm text-muted-foreground text-center sm:text-left">
+                    <div className="text-xs sm:text-sm text-muted-foreground text-center sm:text-left">
                         Showing <span className="font-medium text-foreground">{data.length}</span> of{' '}
                         <span className="font-medium text-foreground">{pagination.total}</span> records.
                     </div>
-                    <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 lg:gap-8">
-                        <div className="flex items-center justify-center text-sm font-medium whitespace-nowrap text-muted-foreground">
-                            Page <span className="text-foreground font-semibold px-1">{pagination.current_page}</span> of <span className="text-foreground font-semibold px-1">{pagination.last_page}</span>
+                    <div className="flex items-center justify-between sm:justify-end gap-4 w-full sm:w-auto">
+                        <div className="text-xs sm:text-sm font-medium text-muted-foreground">
+                            Page <span className="text-foreground font-semibold">{pagination.current_page}</span> of <span className="text-foreground font-semibold">{pagination.last_page}</span>
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1.5">
                             <Button
                                 variant="outline"
-                                className="hidden size-8 p-0 lg:flex animate-none"
+                                className="hidden h-8 w-8 p-0 lg:flex"
                                 size="icon"
                                 onClick={() => router.get(pagination.first_page_url, {}, { preserveScroll: true, preserveState: true })}
                                 disabled={pagination.current_page === 1}
                             >
                                 <span className="sr-only">Go to first page</span>
-                                <IconChevronsLeft className="size-4" />
+                                <IconChevronsLeft className="h-4 w-4" />
                             </Button>
                             <Button
                                 variant="outline"
-                                className="size-8 p-0"
+                                className="h-8 w-8 p-0"
                                 size="icon"
                                 onClick={() => pagination.prev_page_url && router.get(pagination.prev_page_url, {}, { preserveScroll: true, preserveState: true })}
                                 disabled={!pagination.prev_page_url}
                             >
                                 <span className="sr-only">Go to previous page</span>
-                                <IconChevronLeft className="size-4" />
+                                <IconChevronLeft className="h-4 w-4" />
                             </Button>
                             <Button
                                 variant="outline"
-                                className="size-8 p-0"
+                                className="h-8 w-8 p-0"
                                 size="icon"
                                 onClick={() => pagination.next_page_url && router.get(pagination.next_page_url, {}, { preserveScroll: true, preserveState: true })}
                                 disabled={!pagination.next_page_url}
                             >
                                 <span className="sr-only">Go to next page</span>
-                                <IconChevronRight className="size-4" />
+                                <IconChevronRight className="h-4 w-4" />
                             </Button>
                             <Button
                                 variant="outline"
-                                className="hidden size-8 p-0 lg:flex"
+                                className="hidden h-8 w-8 p-0 lg:flex"
                                 size="icon"
                                 onClick={() => router.get(pagination.last_page_url, {}, { preserveScroll: true, preserveState: true })}
                                 disabled={pagination.current_page === pagination.last_page}
                             >
                                 <span className="sr-only">Go to last page</span>
-                                <IconChevronsRight className="size-4" />
+                                <IconChevronsRight className="h-4 w-4" />
                             </Button>
                         </div>
                     </div>
