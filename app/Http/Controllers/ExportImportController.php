@@ -55,7 +55,7 @@ class ExportImportController extends Controller
                     'category' => $sub->category?->name ?? 'Subscription',
                     'wallet' => $sub->wallet?->name ?? '-',
                     'wallet_id' => $sub->wallet_id,
-                    'notes' => 'Langganan: '.$sub->name.($sub->notes ? ' ('.$sub->notes.')' : ''),
+                    'notes' => 'Subscription: '.$sub->name.($sub->notes ? ' ('.$sub->notes.')' : ''),
                     'is_subscription' => true,
                     'goal_id' => null,
                     'debt_id' => null,

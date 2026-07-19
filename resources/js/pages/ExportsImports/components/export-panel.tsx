@@ -148,7 +148,7 @@ export function ExportPanel({ wallets, realTransactions }: ExportPanelProps) {
 
   const handleExport = () => {
     if (selectedScopes.length === 0) {
-      toast.error('Pilih setidaknya satu cakupan (scope) ekspor!');
+      toast.error('Please select at least one export scope!');
       return;
     }
 
@@ -189,9 +189,9 @@ export function ExportPanel({ wallets, realTransactions }: ExportPanelProps) {
       return true;
     });
 
-    const rangeMsg = startDate && endDate ? ` ${startDate} s/d ${endDate}` : ' (semua data)';
-    const scopeLabel = selectedScopes.length === 4 ? 'Semua Ledger' : selectedScopes.join(', ');
-    toast.success(`Mengekspor ${scopeLabel}${rangeMsg} format ${exportFormat.toUpperCase()}...`);
+    const rangeMsg = startDate && endDate ? ` ${startDate} to ${endDate}` : ' (all data)';
+    const scopeLabel = selectedScopes.length === 4 ? 'All Ledgers' : selectedScopes.join(', ');
+    toast.success(`Exporting ${scopeLabel}${rangeMsg} in ${exportFormat.toUpperCase()} format...`);
 
     const walletLabel =
       selectedWallets.includes('all') || selectedWallets.length === 0
@@ -247,7 +247,7 @@ export function ExportPanel({ wallets, realTransactions }: ExportPanelProps) {
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
-          <Label>Export Scope (Bisa Multi-Select)</Label>
+          <Label>Export Scope (Multi-Select)</Label>
           <div className="grid grid-cols-2 gap-3 p-3 rounded-lg border border-border/50 bg-background/30">
             <label className="flex items-center gap-2 text-xs md:text-sm font-medium cursor-pointer select-none">
               <Checkbox
@@ -291,13 +291,13 @@ export function ExportPanel({ wallets, realTransactions }: ExportPanelProps) {
                   );
                 }}
               />
-              Langganan (Subscriptions)
+              Subscriptions
             </label>
           </div>
         </div>
 
         <div className="space-y-2">
-          <Label>Wallet Scope (Bisa Multi-Select)</Label>
+          <Label>Wallet Scope (Multi-Select)</Label>
           <div className="flex flex-wrap gap-2 p-3 rounded-lg border border-border/50 bg-background/30 max-h-40 overflow-y-auto">
             <label className="flex items-center gap-2 text-xs md:text-sm font-medium cursor-pointer select-none bg-accent/40 px-3 py-1.5 rounded-md">
               <Checkbox
@@ -380,23 +380,23 @@ export function ExportPanel({ wallets, realTransactions }: ExportPanelProps) {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="portrait">Portrait (Tegak)</SelectItem>
-                  <SelectItem value="landscape">Landscape (Mendatar)</SelectItem>
+                  <SelectItem value="portrait">Portrait</SelectItem>
+                  <SelectItem value="landscape">Landscape</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div className="grid grid-cols-3 gap-2 pt-1">
               <label className="flex items-center gap-2 text-xs font-medium cursor-pointer">
                 <Checkbox checked={includeStats} onCheckedChange={(v) => setIncludeStats(!!v)} id="chk-stats" />
-                <span>Ringkasan</span>
+                <span>Summary</span>
               </label>
               <label className="flex items-center gap-2 text-xs font-medium cursor-pointer">
                 <Checkbox checked={includeCharts} onCheckedChange={(v) => setIncludeCharts(!!v)} id="chk-charts" />
-                <span>Grafik</span>
+                <span>Charts</span>
               </label>
               <label className="flex items-center gap-2 text-xs font-medium cursor-pointer">
                 <Checkbox checked={includeTable} onCheckedChange={(v) => setIncludeTable(!!v)} id="chk-table" />
-                <span>Tabel</span>
+                <span>Table</span>
               </label>
             </div>
           </div>
@@ -406,8 +406,8 @@ export function ExportPanel({ wallets, realTransactions }: ExportPanelProps) {
           <div className="flex items-start gap-2 text-xs text-muted-foreground bg-muted/30 rounded-lg px-3 py-2 border border-border/40">
             <IconChartBar className="h-3.5 w-3.5 text-primary flex-shrink-0 mt-0.5" />
             <span>
-              Berisi <strong className="text-foreground">bar chart tren bulanan</strong> dan{' '}
-              <strong className="text-foreground">donut chart kategori</strong>. Buka di browser lalu simpan sebagai PDF.
+              Contains a <strong className="text-foreground">monthly trend bar chart</strong> and a{' '}
+              <strong className="text-foreground">category donut chart</strong>. Open in your browser and print to save as a PDF.
             </span>
           </div>
         )}
@@ -416,7 +416,7 @@ export function ExportPanel({ wallets, realTransactions }: ExportPanelProps) {
           <div className="flex items-start gap-2 text-xs text-muted-foreground bg-muted/30 rounded-lg px-3 py-2 border border-border/40">
             <IconFileText className="h-3.5 w-3.5 text-rose-500 flex-shrink-0 mt-0.5" />
             <span>
-              Laporan interaktif dengan grafik yang dioptimalkan untuk cetak PDF. Pilih opsi <strong className="text-foreground">Save as PDF</strong> di dialog cetak browser Anda.
+              Interactive report with charts optimized for PDF printing. Select the <strong className="text-foreground">Save as PDF</strong> option in your browser's print dialog.
             </span>
           </div>
         )}

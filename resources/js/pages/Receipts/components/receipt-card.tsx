@@ -17,6 +17,29 @@ const formatCurrency = (value: number | string) => {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(n);
 };
 
+const formatDate = (dateStr: string) => {
+  try {
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) {
+      return dateStr;
+    }
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const year = d.getFullYear();
+
+    // Check if date contains a non-zero time component
+    const hasTime = dateStr.includes('T') && !dateStr.endsWith('T00:00:00.000000Z') && !dateStr.endsWith('T00:00:00.000Z');
+    if (hasTime) {
+      const hours = String(d.getHours()).padStart(2, '0');
+      const minutes = String(d.getMinutes()).padStart(2, '0');
+      return `${day}-${month}-${year} ${hours}:${minutes}`;
+    }
+    return `${day}-${month}-${year}`;
+  } catch (e) {
+    return dateStr;
+  }
+};
+
 function downloadReceipt(receipt: ReceiptItem) {
   const title = receipt.notes || receipt.category?.name || 'Expense Receipt';
   toast.success(`Downloading receipt for "${title}"...`);
@@ -25,7 +48,7 @@ function downloadReceipt(receipt: ReceiptItem) {
           FINANCE STATEMENT RECEIPT
 =========================================
 Transaction ID: #${receipt.id}
-Date:           ${receipt.date}
+Date:           ${formatDate(receipt.date)}
 Category:       ${receipt.category?.name || 'General'}
 Account:        ${receipt.wallet?.name || 'Main Wallet'}
 Description:    ${title}
@@ -60,7 +83,7 @@ export function ReceiptCard({ receipt }: { receipt: ReceiptItem }) {
         </div>
         <div className="space-y-1">
           <p className="text-xs text-muted-foreground font-mono flex items-center gap-1">
-            <IconCalendarCheck className="h-3 w-3" />{receipt.date}
+            <IconCalendarCheck className="h-3 w-3" />{formatDate(receipt.date)}
           </p>
           <h4 className="text-sm font-semibold truncate leading-tight group-hover:text-primary transition-colors">{title}</h4>
           <p className="text-xs text-muted-foreground/80 truncate">Account: {receipt.wallet?.name || 'Main Wallet'}</p>

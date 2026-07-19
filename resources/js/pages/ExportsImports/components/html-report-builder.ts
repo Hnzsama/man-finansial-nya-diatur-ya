@@ -27,11 +27,11 @@ export function buildHtmlReport(
   const includeStats = options.includeStats !== false;
   const orientation = options.orientation || 'portrait';
 
-  const now = new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  const now = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
   const totalIncome = rows.filter(r => r.type === 'income').reduce((s, r) => s + r.amount, 0);
   const totalExpense = rows.filter(r => r.type === 'expense').reduce((s, r) => s + r.amount, 0);
   const netCash = totalIncome - totalExpense;
-  const fmt = (n: number) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(n);
+  const fmt = (n: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(n);
 
   // Bar chart
   const monthlyData = [
@@ -61,7 +61,7 @@ export function buildHtmlReport(
     const y = padT + chartH - Math.round(pct * chartH);
     const val = Math.round(pct * barMax / 1000000);
     return `<line x1="${padL - 6}" y1="${y}" x2="${chartW - padR}" y2="${y}" stroke="#e4e4e7" stroke-width="1"/>
-            <text x="${padL - 10}" y="${y + 4}" text-anchor="end" font-size="10" fill="#a1a1aa" font-family="Inter,sans-serif">${val}jt</text>`;
+            <text x="${padL - 10}" y="${y + 4}" text-anchor="end" font-size="10" fill="#a1a1aa" font-family="Inter,sans-serif">${val}M</text>`;
   }).join('');
 
   // Donut chart
@@ -187,30 +187,30 @@ export function buildHtmlReport(
   <div style="padding:24px 40px 0; max-width:${orientation === 'landscape' ? '1200px' : '1000px'}; margin:0 auto;" class="no-print">
     <button class="print-btn" onclick="window.print()">
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-printer"><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 9V3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v6"/><rect x="6" y="14" width="12" height="8" rx="1"/></svg>
-      Cetak / Simpan PDF
+      Print / Save PDF
     </button>
   </div>
   <div class="page">
     <div class="header">
-      <div class="header-badge">Dibuat: ${now}</div>
+      <div class="header-badge">Generated: ${now}</div>
       <div class="header-title">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-zinc-900"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M12 18v-6"/><path d="M9 15h6"/></svg>
         Man Finance Report
       </div>
-      <div class="header-subtitle">Laporan ekspor data ledger resmi — Man Finance</div>
+      <div class="header-subtitle">Official ledger export report — Man Finance</div>
     </div>
     <div class="meta-bar">
-      <div class="meta-item">Cakupan: <strong>${scope.toUpperCase()}</strong></div>
-      <div class="meta-item">Periode: <strong>${dateFrom || 'Semua'} s/d ${dateTo || 'Sekarang'}</strong></div>
-      <div class="meta-item">Dompet: <strong>${walletLabel}</strong></div>
+      <div class="meta-item">Scope: <strong>${scope.toUpperCase()}</strong></div>
+      <div class="meta-item">Period: <strong>${dateFrom || 'All'} to ${dateTo || 'Present'}</strong></div>
+      <div class="meta-item">Wallet: <strong>${walletLabel}</strong></div>
     </div>
     
     ${includeStats ? `
     <div class="section">
-      <div class="section-title">Ringkasan Finansial</div>
+      <div class="section-title">Financial Summary</div>
       <div class="summary-grid">
-        <div class="summary-card income"><div class="sc-label">Total Pemasukan</div><div class="sc-value">${fmt(totalIncome)}</div></div>
-        <div class="summary-card expense"><div class="sc-label">Total Pengeluaran</div><div class="sc-value">${fmt(totalExpense)}</div></div>
+        <div class="summary-card income"><div class="sc-label">Total Income</div><div class="sc-value">${fmt(totalIncome)}</div></div>
+        <div class="summary-card expense"><div class="sc-label">Total Expense</div><div class="sc-value">${fmt(totalExpense)}</div></div>
         <div class="summary-card net"><div class="sc-label">Net Cash Flow</div><div class="sc-value" style="color: ${netCash >= 0 ? '#059669' : '#dc2626'}">${fmt(netCash)}</div></div>
       </div>
     </div>
@@ -218,20 +218,20 @@ export function buildHtmlReport(
     
     ${includeCharts ? `
     <div class="section">
-      <div class="section-title">Visualisasi Data</div>
+      <div class="section-title">Data Visualization</div>
       <div class="charts-row">
         <div class="chart-box">
-          <div class="chart-box-title">Tren Bulanan</div>
+          <div class="chart-box-title">Monthly Trend</div>
           <div class="chart-legend">
-            <div class="legend-item"><div class="legend-dot" style="background:#10b981;"></div>Pemasukan</div>
-            <div class="legend-item"><div class="legend-dot" style="background:#ef4444;"></div>Pengeluaran</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#10b981;"></div>Income</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#ef4444;"></div>Expense</div>
           </div>
           <svg width="100%" viewBox="0 0 ${chartW} ${padT + chartH + labelH}" xmlns="http://www.w3.org/2000/svg">
             ${yGridLines}${barSvgBars}
           </svg>
         </div>
         <div class="chart-box">
-          <div class="chart-box-title">Distribusi Pengeluaran</div>
+          <div class="chart-box-title">Expense Distribution</div>
           <div style="display:flex;gap:24px;align-items:center;flex-wrap:wrap;justify-content:center;">
             <svg width="220" height="220" viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;">
               ${donutPaths}
@@ -248,17 +248,17 @@ export function buildHtmlReport(
     
     ${includeTable ? `
     <div class="section" style="page-break-before: auto;">
-      <div class="section-title">Rincian Transaksi</div>
+      <div class="section-title">Transaction Details</div>
       <div class="table-container">
         <table class="tx-table">
-          <thead><tr><th>Tanggal</th><th>Tipe</th><th style="text-align:right;">Jumlah</th><th>Kategori</th><th>Wallet</th><th>Catatan</th></tr></thead>
+          <thead><tr><th>Date</th><th>Type</th><th style="text-align:right;">Amount</th><th>Category</th><th>Wallet</th><th>Notes</th></tr></thead>
           <tbody>${txRows}</tbody>
         </table>
       </div>
     </div>
     ` : ''}
     
-    <div class="footer">Laporan keuangan ini digenerate secara otomatis oleh Aplikasi Man Finance.</div>
+    <div class="footer">Auto-generated report. Verify against official bank statements.</div>
   </div>
 </body>
 </html>`;
