@@ -6,6 +6,7 @@ import AppLayout from '@/layouts/app-layout';
 import type { BreadcrumbItem } from '@/types';
 import { index as calendarIndex } from '@/actions/App/Http/Controllers/CalendarController';
 import { SummaryCards } from './components/summary-cards';
+import { CollapsibleSummary } from '@/components/collapsible-summary';
 import { EventDrawer } from './components/event-drawer';
 
 interface Transaction {
@@ -253,15 +254,17 @@ export default function CalendarIndex({
             </div>
 
             {/* Summary cards */}
-            <SummaryCards
-              currentMonth={currentMonth}
-              currentYear={currentYear}
-              transactions={transactions}
-              goals={goals}
-              debts={debts}
-              subscriptions={subscriptions}
-              formatCurrency={formatCurrency}
-            />
+            <CollapsibleSummary>
+              <SummaryCards
+                currentMonth={currentMonth}
+                currentYear={currentYear}
+                transactions={transactions}
+                goals={goals}
+                debts={debts}
+                subscriptions={subscriptions}
+                formatCurrency={formatCurrency}
+              />
+            </CollapsibleSummary>
 
             {/* Calendar Grid Section */}
             <div className="bg-card border border-border/50 rounded-2xl overflow-hidden shadow-sm flex flex-col">

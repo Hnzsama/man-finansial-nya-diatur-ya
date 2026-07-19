@@ -39,6 +39,7 @@ import { NavDocuments } from '@/components/nav-documents';
 import { NavMain } from '@/components/nav-main';
 import { NavSecondary } from '@/components/nav-secondary';
 import { NavUser } from '@/components/nav-user';
+import AppLogoIcon from '@/components/app-logo-icon';
 import {
     Sidebar,
     SidebarContent,
@@ -149,10 +150,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                             asChild
                             className="data-[slot=sidebar-menu-button]:p-1.5!"
                         >
-                            <a href={dashboard.url()}>
-                                <IconInnerShadowTop className="size-5!" />
-                                <span className="text-base font-semibold">
-                                    Acme Inc.
+                            <a href={dashboard.url()} className="flex items-center gap-2">
+                                <AppLogoIcon className="size-5! fill-current text-black dark:text-white" />
+                                <span className="text-base font-bold text-black dark:text-white">
+                                    Man Finance
                                 </span>
                             </a>
                         </SidebarMenuButton>

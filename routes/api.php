@@ -26,12 +26,14 @@ Route::middleware('auth:sanctum')->group(function () {
     // Calendar API
     Route::get('/calendar', [CalendarApiController::class, 'index']);
 
-    // Resources
-    Route::apiResource('wallets', WalletApiController::class);
-    Route::apiResource('categories', CategoryApiController::class);
-    Route::apiResource('transactions', TransactionApiController::class);
-    Route::apiResource('goals', GoalApiController::class);
-    Route::apiResource('debts', DebtApiController::class);
-    Route::apiResource('assets', AssetApiController::class);
-    Route::apiResource('subscriptions', SubscriptionApiController::class);
+    // Resources (prefixed with api. for route names)
+    Route::name('api.')->group(function () {
+        Route::apiResource('wallets', WalletApiController::class);
+        Route::apiResource('categories', CategoryApiController::class);
+        Route::apiResource('transactions', TransactionApiController::class);
+        Route::apiResource('goals', GoalApiController::class);
+        Route::apiResource('debts', DebtApiController::class);
+        Route::apiResource('assets', AssetApiController::class);
+        Route::apiResource('subscriptions', SubscriptionApiController::class);
+    });
 });

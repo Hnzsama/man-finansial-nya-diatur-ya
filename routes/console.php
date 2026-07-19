@@ -10,3 +10,6 @@ Artisan::command('inspire', function () {
 
 // Automatically process due recurring subscriptions daily
 Schedule::command('subscriptions:process')->daily();
+
+// Automatically send due reminders for debts/loans and subscriptions daily
+Schedule::command('app:send-due-reminders')->daily();

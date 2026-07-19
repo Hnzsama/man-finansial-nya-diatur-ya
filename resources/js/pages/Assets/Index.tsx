@@ -7,6 +7,7 @@ import AppLayout from '@/layouts/app-layout';
 import type { BreadcrumbItem } from '@/types';
 import { index as assetIndex } from '@/actions/App/Http/Controllers/AssetController';
 import { SummaryCards } from './components/summary-cards';
+import { CollapsibleSummary } from '@/components/collapsible-summary';
 import { AssetSheet } from './components/asset-sheet';
 import { useAssetColumns } from './components/columns';
 import {
@@ -117,11 +118,13 @@ export default function AssetsIndex({ assets, stats }: PageProps) {
             </div>
 
             {/* Summary Cards */}
-            <SummaryCards
-              totalValue={stats.total_value}
-              counts={stats.counts}
-              formatCurrency={formatCurrency}
-            />
+            <CollapsibleSummary>
+              <SummaryCards
+                totalValue={stats.total_value}
+                counts={stats.counts}
+                formatCurrency={formatCurrency}
+              />
+            </CollapsibleSummary>
 
             {/* Local Filter Bar */}
             <div className="bg-card/50 p-4 border border-border/50 rounded-xl shadow-sm">

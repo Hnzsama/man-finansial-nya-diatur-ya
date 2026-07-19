@@ -10,6 +10,7 @@ import { useTransactionColumns } from './components/columns';
 import { DataTable } from './components/data-table';
 import { FilterBar } from './components/filter-bar';
 import { SummaryCards } from './components/summary-cards';
+import { CollapsibleSummary } from '@/components/collapsible-summary';
 import { TransactionSheet } from './components/transaction-sheet';
 import { TransferSheet } from './components/transfer-sheet';
 
@@ -107,7 +108,9 @@ export default function TransactionsIndex({ transactions, wallets, categories, s
                         </div>
 
                         {/* Summary Cards */}
-                        <SummaryCards stats={stats} filters={filters} />
+                        <CollapsibleSummary>
+                            <SummaryCards stats={stats} filters={filters} />
+                        </CollapsibleSummary>
 
                         {/* Filters */}
                         <div className="bg-card/50 p-4 border border-border/50 rounded-xl shadow-sm">

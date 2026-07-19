@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Transaction;
 use App\Models\Transfer;
 use App\Models\Wallet;
@@ -44,11 +45,30 @@ class TransferController extends Controller
                 $expenseNotes = 'Transfer to '.$toWallet->name.($notesText ? " ({$notesText})" : '');
                 $incomeNotes = 'Transfer from '.$fromWallet->name.($notesText ? " ({$notesText})" : '');
 
+                // Get or create transfer categories
+                $transferOutCategory = Category::firstOrCreate([
+                    'user_id' => $user->id,
+                    'name' => 'Transfer Keluar',
+                    'type' => 'expense',
+                ], [
+                    'icon' => 'ArrowsRightLeft',
+                    'color' => '#EF4444',
+                ]);
+
+                $transferInCategory = Category::firstOrCreate([
+                    'user_id' => $user->id,
+                    'name' => 'Transfer Masuk',
+                    'type' => 'income',
+                ], [
+                    'icon' => 'ArrowsRightLeft',
+                    'color' => '#10B981',
+                ]);
+
                 // 1. Create Expense Transaction on source wallet
                 $expenseTx = Transaction::create([
                     'user_id' => $user->id,
                     'wallet_id' => $fromWallet->id,
-                    'category_id' => null,
+                    'category_id' => $transferOutCategory->id,
                     'type' => 'expense',
                     'amount' => $amount,
                     'date' => $validated['date'],
@@ -59,7 +79,7 @@ class TransferController extends Controller
                 $incomeTx = Transaction::create([
                     'user_id' => $user->id,
                     'wallet_id' => $toWallet->id,
-                    'category_id' => null,
+                    'category_id' => $transferInCategory->id,
                     'type' => 'income',
                     'amount' => $amount,
                     'date' => $validated['date'],

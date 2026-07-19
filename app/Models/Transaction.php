@@ -61,4 +61,26 @@ class Transaction extends Model
     {
         return $this->hasMany(TransactionHistory::class);
     }
+
+    protected static function booted(): void
+    {
+        static::created(function (Transaction $transaction) {
+            $walletName = $transaction->wallet?->name ?? 'Unknown Wallet';
+            $categoryName = $transaction->category?->name ?? 'No Category';
+            $typeLabel = $transaction->type === 'income' ? 'Pemasukan' : 'Pengeluaran';
+            $formattedAmount = number_format((float) $transaction->amount, 0, ',', '.');
+            $dateFormatted = $transaction->date ? $transaction->date->format('d-m-Y') : now()->format('d-m-Y');
+
+            $message = "🔔 *Notifikasi Transaksi Baru*\n\n"
+                     . "🏷️ *Tipe:* {$typeLabel}\n"
+                     . "💰 *Jumlah:* Rp {$formattedAmount}\n"
+                     . "💳 *Dompet:* {$walletName}\n"
+                     . "📁 *Kategori:* {$categoryName}\n"
+                     . "📅 *Tanggal:* {$dateFormatted}\n"
+                     . "📝 *Catatan:* " . ($transaction->notes ?: '-') . "\n\n"
+                     . "Man Finance - Diatur ya keuangannya! 💪";
+
+            dispatch(new \App\Jobs\SendWhatsAppNotification($message));
+        });
+    }
 }

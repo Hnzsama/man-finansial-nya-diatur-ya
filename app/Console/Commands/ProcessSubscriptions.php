@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Category;
 use App\Models\Subscription;
 use App\Models\Transaction;
 use App\Models\Wallet;
@@ -55,11 +56,23 @@ class ProcessSubscriptions extends Command
                         ->lockForUpdate()
                         ->firstOrFail();
 
+                    $categoryId = $sub->category_id;
+                    if (empty($categoryId)) {
+                        $categoryId = Category::firstOrCreate([
+                            'user_id' => $sub->user_id,
+                            'name' => 'Langganan',
+                            'type' => 'expense',
+                        ], [
+                            'icon' => 'Repeat',
+                            'color' => '#6366F1',
+                        ])->id;
+                    }
+
                     // Create the expense transaction
                     Transaction::create([
                         'user_id' => $sub->user_id,
                         'wallet_id' => $wallet->id,
-                        'category_id' => $sub->category_id,
+                        'category_id' => $categoryId,
                         'type' => 'expense',
                         'amount' => $sub->amount,
                         'date' => Carbon::now()->format('Y-m-d'),

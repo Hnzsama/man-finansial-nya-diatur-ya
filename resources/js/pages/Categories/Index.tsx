@@ -34,6 +34,7 @@ import AppLayout from '@/layouts/app-layout';
 import type { BreadcrumbItem } from '@/types';
 
 import { SummaryCards } from './components/summary-cards';
+import { CollapsibleSummary } from '@/components/collapsible-summary';
 import { CategorySheet, DynamicIcon } from './components/category-sheet';
 
 interface Budget {
@@ -284,7 +285,9 @@ export default function CategoriesIndex({ categories, stats }: PageProps) {
             </div>
 
             {/* Summary Cards */}
-            <SummaryCards stats={stats} formatCurrency={formatCurrency} />
+            <CollapsibleSummary>
+              <SummaryCards stats={stats} formatCurrency={formatCurrency} />
+            </CollapsibleSummary>
 
             {/* Tabs & Content */}
             <Tabs defaultValue="expense" className="w-full space-y-4">

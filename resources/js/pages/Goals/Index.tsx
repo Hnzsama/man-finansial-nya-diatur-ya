@@ -31,6 +31,7 @@ import AppLayout from '@/layouts/app-layout';
 import type { BreadcrumbItem } from '@/types';
 
 import { SummaryCards } from './components/summary-cards';
+import { CollapsibleSummary } from '@/components/collapsible-summary';
 import { GoalSheet, DynamicIcon } from './components/goal-sheet';
 import { AddMoneySheet } from './components/add-money-sheet';
 
@@ -148,14 +149,16 @@ export default function GoalsIndex({ goals }: PageProps) {
             </div>
 
             {/* Summary Cards */}
-            <SummaryCards
-              totalTarget={totalTarget}
-              totalTerkumpul={totalTerkumpul}
-              totalSisa={totalSisa}
-              goalsAchieved={goalsAchieved}
-              totalGoalsCount={goals.length}
-              formatCurrency={formatCurrency}
-            />
+            <CollapsibleSummary>
+              <SummaryCards
+                totalTarget={totalTarget}
+                totalTerkumpul={totalTerkumpul}
+                totalSisa={totalSisa}
+                goalsAchieved={goalsAchieved}
+                totalGoalsCount={goals.length}
+                formatCurrency={formatCurrency}
+              />
+            </CollapsibleSummary>
 
             {/* Goals Grid */}
             {filteredGoals.length > 0 ? (

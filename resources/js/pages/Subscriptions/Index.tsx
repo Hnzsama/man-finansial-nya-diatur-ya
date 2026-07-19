@@ -28,6 +28,7 @@ import AppLayout from '@/layouts/app-layout';
 import type { BreadcrumbItem } from '@/types';
 
 import { SummaryCards } from './components/summary-cards';
+import { CollapsibleSummary } from '@/components/collapsible-summary';
 import { SubscriptionSheet } from './components/subscription-sheet';
 import { getColumns } from './components/columns';
 
@@ -152,7 +153,9 @@ export default function SubscriptionsIndex({ subscriptions, wallets, categories,
             </div>
 
             {/* Summary Cards */}
-            <SummaryCards stats={stats} formatCurrency={formatCurrency} />
+            <CollapsibleSummary>
+              <SummaryCards stats={stats} formatCurrency={formatCurrency} />
+            </CollapsibleSummary>
 
             {/* Subscriptions List */}
             {filteredSubscriptions.length > 0 ? (

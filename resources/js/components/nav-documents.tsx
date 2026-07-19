@@ -1,4 +1,4 @@
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import {
   IconDots,
   IconFolder,
@@ -31,6 +31,18 @@ export function NavDocuments({
   items: NavItem[]
 }) {
   const { isMobile } = useSidebar()
+  const page = usePage();
+
+  const checkIsActive = (href: any) => {
+    try {
+        const itemUrl = new URL(href as string, window.location.origin);
+        const currentPath = page.url.split('?')[0];
+
+        return itemUrl.pathname === currentPath;
+    } catch {
+        return false;
+    }
+  };
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
@@ -38,7 +50,7 @@ export function NavDocuments({
       <SidebarMenu>
         {items.map((item) => (
           <SidebarMenuItem key={item.title}>
-            <SidebarMenuButton asChild>
+            <SidebarMenuButton asChild isActive={checkIsActive(item.href)}>
               <Link href={item.href} prefetch>
                 {item.icon && <item.icon />}
                 <span>{item.title}</span>

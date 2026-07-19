@@ -42,6 +42,7 @@ import AppLayout from '@/layouts/app-layout';
 import type { BreadcrumbItem } from '@/types';
 
 import { SummaryCards } from './components/summary-cards';
+import { CollapsibleSummary } from '@/components/collapsible-summary';
 import { WalletSheet } from './components/wallet-sheet';
 import { useWalletColumns } from './components/columns';
 
@@ -136,50 +137,54 @@ export default function Index({ wallets, stats }: { wallets: Wallet[], stats: St
                     </div>
 
                     {/* Summary Cards */}
-                    <SummaryCards stats={stats} formatCurrency={formatCurrency} />
+                    <CollapsibleSummary>
+                        <SummaryCards stats={stats} formatCurrency={formatCurrency} />
+                    </CollapsibleSummary>
 
                     {/* Rich Data Table Section */}
                     <div className="flex flex-col justify-start gap-6 pt-4">
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                             <h2 className="text-lg font-semibold tracking-tight">Connected Accounts</h2>
                             
-                            <div className="flex flex-col sm:flex-row items-center gap-2 w-full sm:w-auto">
+                            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
                                 <div className="relative w-full sm:w-60">
                                     <IconSearch className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
                                     <Input
                                         placeholder="Search wallets..."
                                         value={searchQuery}
                                         onChange={(e) => setSearchQuery(e.target.value)}
-                                        className="pl-9 bg-card h-9"
+                                        className="pl-9 bg-card h-9 w-full"
                                     />
                                 </div>
-                                <DropdownMenu>
-                                    <DropdownMenuTrigger asChild>
-                                        <Button variant="outline" size="sm">
-                                            <IconLayoutColumns />
-                                            <span className="hidden lg:inline">Customize Columns</span>
-                                            <span className="lg:hidden">Columns</span>
-                                            <IconChevronDown />
-                                        </Button>
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="end" className="w-56">
-                                        {table.getAllColumns().filter((c) => typeof c.accessorFn !== "undefined" && c.getCanHide()).map((c) => (
-                                            <DropdownMenuCheckboxItem key={c.id} className="capitalize" checked={c.getIsVisible()} onCheckedChange={(v) => c.toggleVisibility(!!v)}>
-                                                {c.id}
-                                            </DropdownMenuCheckboxItem>
-                                        ))}
-                                    </DropdownMenuContent>
-                                </DropdownMenu>
-                                
-                                <Button size="sm" onClick={() => setIsCreateOpen(true)}>
-                                    <IconPlus />
-                                    <span>Add Wallet</span>
-                                </Button>
+                                <div className="flex items-center gap-2 w-full sm:w-auto">
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button variant="outline" size="sm" className="h-9 flex-1 sm:flex-initial justify-center gap-1.5">
+                                                <IconLayoutColumns className="h-4 w-4" />
+                                                <span>Columns</span>
+                                                <IconChevronDown className="h-3.5 w-3.5" />
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end" className="w-56">
+                                            {table.getAllColumns().filter((c) => typeof c.accessorFn !== "undefined" && c.getCanHide()).map((c) => (
+                                                <DropdownMenuCheckboxItem key={c.id} className="capitalize" checked={c.getIsVisible()} onCheckedChange={(v) => c.toggleVisibility(!!v)}>
+                                                    {c.id}
+                                                </DropdownMenuCheckboxItem>
+                                            ))}
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                    
+                                    <Button size="sm" onClick={() => setIsCreateOpen(true)} className="h-9 flex-1 sm:flex-initial justify-center gap-1.5">
+                                        <IconPlus className="h-4 w-4" />
+                                        <span>Add Wallet</span>
+                                    </Button>
+                                </div>
                             </div>
                         </div>
 
                         <div className="rounded-xl border border-border/50 bg-card/50 overflow-hidden shadow-xs">
-                            <Table>
+                            <div className="overflow-x-auto w-full">
+                                <Table>
                                 <TableHeader>
                                     {table.getHeaderGroups().map((hg) => (
                                         <TableRow key={hg.id}>
@@ -211,17 +216,18 @@ export default function Index({ wallets, stats }: { wallets: Wallet[], stats: St
                                     )}
                                 </TableBody>
                             </Table>
+                            </div>
                             
                             {/* Pagination Controls */}
-                            <div className="flex items-center justify-between p-4 border-t border-border/40 bg-card/30">
-                                <div className="flex-1 text-sm text-muted-foreground">
+                            <div className="flex flex-col sm:flex-row items-center justify-between p-4 gap-4 border-t border-border/40 bg-card/30">
+                                <div className="text-sm text-muted-foreground text-center sm:text-left">
                                     {table.getFilteredSelectedRowModel().rows.length} of {table.getFilteredRowModel().rows.length} row(s) selected.
                                 </div>
-                                <div className="flex items-center space-x-6 lg:space-x-8">
+                                <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 lg:gap-8">
                                     <div className="flex items-center space-x-2">
-                                        <p className="text-sm font-medium">Rows per page</p>
+                                        <p className="text-sm font-medium whitespace-nowrap">Rows per page</p>
                                         <select
-                                            className="h-8 w-[70px] rounded-md border border-input bg-card text-xs"
+                                            className="h-8 w-[70px] rounded-md border border-input bg-card text-xs outline-none"
                                             value={table.getState().pagination.pageSize}
                                             onChange={(e) => table.setPageSize(Number(e.target.value))}
                                         >
@@ -230,10 +236,10 @@ export default function Index({ wallets, stats }: { wallets: Wallet[], stats: St
                                             ))}
                                         </select>
                                     </div>
-                                    <div className="flex w-fit items-center justify-center text-sm font-medium">
+                                    <div className="flex items-center justify-center text-sm font-medium whitespace-nowrap">
                                         Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount() || 1}
                                     </div>
-                                    <div className="ml-auto flex items-center gap-2 lg:ml-0">
+                                    <div className="flex items-center gap-2">
                                         <Button variant="outline" className="hidden h-8 w-8 p-0 lg:flex" onClick={() => table.setPageIndex(0)} disabled={!table.getCanPreviousPage()}>
                                             <span className="sr-only">Go to first page</span><IconChevronsLeft />
                                         </Button>

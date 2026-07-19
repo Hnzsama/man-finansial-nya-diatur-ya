@@ -37,6 +37,7 @@ import AppLayout from '@/layouts/app-layout';
 import type { BreadcrumbItem } from '@/types';
 
 import { SummaryCards } from './components/summary-cards';
+import { CollapsibleSummary } from '@/components/collapsible-summary';
 import { DebtSheet } from './components/debt-sheet';
 import { RepaymentSheet } from './components/repayment-sheet';
 
@@ -304,24 +305,28 @@ export default function DebtsIndex({ debts, stats, wallets }: PageProps) {
             </div>
 
             {/* Statistics Row */}
-            <SummaryCards stats={stats} formatCurrency={formatCurrency} />
+            <CollapsibleSummary>
+              <SummaryCards stats={stats} formatCurrency={formatCurrency} />
+            </CollapsibleSummary>
 
             {/* Tabs List */}
             <Tabs defaultValue="payable" className="w-full">
-              <TabsList className="bg-muted">
-                <TabsTrigger value="payable" className="gap-2">
-                  <IconTrendingDown className="h-4 w-4 text-orange-500" />
-                  My Debts ({activePayables.length})
-                </TabsTrigger>
-                <TabsTrigger value="receivable" className="gap-2">
-                  <IconTrendingUp className="h-4 w-4 text-emerald-500" />
-                  My Loans ({activeReceivables.length})
-                </TabsTrigger>
-                <TabsTrigger value="settled" className="gap-2">
-                  <IconCheck className="h-4 w-4 text-blue-500" />
-                  Settled History ({settledDebts.length})
-                </TabsTrigger>
-              </TabsList>
+              <div className="w-full overflow-x-auto scrollbar-none -mx-4 px-4 sm:mx-0 sm:px-0">
+                <TabsList className="bg-muted flex w-max sm:w-fit">
+                  <TabsTrigger value="payable" className="gap-2">
+                    <IconTrendingDown className="h-4 w-4 text-orange-500" />
+                    My Debts ({activePayables.length})
+                  </TabsTrigger>
+                  <TabsTrigger value="receivable" className="gap-2">
+                    <IconTrendingUp className="h-4 w-4 text-emerald-500" />
+                    My Loans ({activeReceivables.length})
+                  </TabsTrigger>
+                  <TabsTrigger value="settled" className="gap-2">
+                    <IconCheck className="h-4 w-4 text-blue-500" />
+                    Settled History ({settledDebts.length})
+                  </TabsTrigger>
+                </TabsList>
+              </div>
 
               <TabsContent value="payable" className="mt-6 space-y-4">
                 {renderDebtCards(activePayables)}

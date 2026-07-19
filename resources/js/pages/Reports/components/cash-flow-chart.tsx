@@ -34,45 +34,49 @@ export function CashFlowChart({ data }: CashFlowChartProps) {
             No enough history to plot trend charts.
           </div>
         ) : (
-          <ChartContainer config={chartConfig} className="aspect-auto h-[250px] w-full">
-            <AreaChart data={data}>
-              <defs>
-                <linearGradient id="fillIncome" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="var(--color-income)" stopOpacity={0.4} />
-                  <stop offset="95%" stopColor="var(--color-income)" stopOpacity={0.0} />
-                </linearGradient>
-                <linearGradient id="fillExpense" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="var(--color-expense)" stopOpacity={0.4} />
-                  <stop offset="95%" stopColor="var(--color-expense)" stopOpacity={0.0} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid vertical={false} strokeDasharray="3 3" className="stroke-muted/30" />
-              <XAxis
-                dataKey="date"
-                tickLine={false}
-                axisLine={false}
-                tickMargin={8}
-                tickFormatter={value => {
-                  const parts = value.split('-');
-                  return parts.length > 1 ? `${parts[1]}/${parts[0].slice(2)}` : value;
-                }}
-              />
-              <YAxis
-                tickLine={false}
-                axisLine={false}
-                tickMargin={8}
-                width={60}
-                tickFormatter={value => {
-                  if (value >= 1000000) return `Rp ${(value / 1000000).toFixed(0)}M`;
-                  if (value >= 1000) return `Rp ${(value / 1000).toFixed(0)}k`;
-                  return `Rp ${value}`;
-                }}
-              />
-              <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="dot" />} />
-              <Area dataKey="income" type="monotone" fill="url(#fillIncome)" stroke="var(--color-income)" strokeWidth={2} />
-              <Area dataKey="expense" type="monotone" fill="url(#fillExpense)" stroke="var(--color-expense)" strokeWidth={2} />
-            </AreaChart>
-          </ChartContainer>
+          <div className="w-full overflow-x-auto scrollbar-none">
+            <div className="min-w-[600px] h-[250px]">
+              <ChartContainer config={chartConfig} className="aspect-auto h-full w-full">
+                <AreaChart data={data}>
+                  <defs>
+                    <linearGradient id="fillIncome" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="var(--color-income)" stopOpacity={0.4} />
+                      <stop offset="95%" stopColor="var(--color-income)" stopOpacity={0.0} />
+                    </linearGradient>
+                    <linearGradient id="fillExpense" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="var(--color-expense)" stopOpacity={0.4} />
+                      <stop offset="95%" stopColor="var(--color-expense)" stopOpacity={0.0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid vertical={false} strokeDasharray="3 3" className="stroke-muted/30" />
+                  <XAxis
+                    dataKey="date"
+                    tickLine={false}
+                    axisLine={false}
+                    tickMargin={8}
+                    tickFormatter={value => {
+                      const parts = value.split('-');
+                      return parts.length > 1 ? `${parts[1]}/${parts[0].slice(2)}` : value;
+                    }}
+                  />
+                  <YAxis
+                    tickLine={false}
+                    axisLine={false}
+                    tickMargin={8}
+                    width={60}
+                    tickFormatter={value => {
+                      if (value >= 1000000) return `Rp ${(value / 1000000).toFixed(0)}M`;
+                      if (value >= 1000) return `Rp ${(value / 1000).toFixed(0)}k`;
+                      return `Rp ${value}`;
+                    }}
+                  />
+                  <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="dot" />} />
+                  <Area dataKey="income" type="monotone" fill="url(#fillIncome)" stroke="var(--color-income)" strokeWidth={2} />
+                  <Area dataKey="expense" type="monotone" fill="url(#fillExpense)" stroke="var(--color-expense)" strokeWidth={2} />
+                </AreaChart>
+              </ChartContainer>
+            </div>
+          </div>
         )}
       </CardContent>
     </Card>

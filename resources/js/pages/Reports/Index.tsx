@@ -4,6 +4,7 @@ import AppLayout from '@/layouts/app-layout';
 import type { BreadcrumbItem } from '@/types';
 import { index as reportsIndex } from '@/actions/App/Http/Controllers/ReportController';
 import { SummaryCards } from './components/summary-cards';
+import { CollapsibleSummary } from '@/components/collapsible-summary';
 import { CashFlowChart } from './components/cash-flow-chart';
 import { CategoryDistribution } from './components/category-distribution';
 import { WalletDistribution } from './components/wallet-distribution';
@@ -41,11 +42,13 @@ export default function ReportsIndex({ summary, categoriesDistribution, monthlyT
               </p>
             </div>
 
-            <SummaryCards
-              totalIncome={summary.total_income}
-              totalExpense={summary.total_expense}
-              netSavings={summary.net_savings}
-            />
+            <CollapsibleSummary>
+              <SummaryCards
+                totalIncome={summary.total_income}
+                totalExpense={summary.total_expense}
+                netSavings={summary.net_savings}
+              />
+            </CollapsibleSummary>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <CashFlowChart data={trendData} />
