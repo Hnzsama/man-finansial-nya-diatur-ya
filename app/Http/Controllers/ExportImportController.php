@@ -30,7 +30,7 @@ class ExportImportController extends Controller
             ->get()
             ->map(function ($tx) {
                 return [
-                    'date' => $tx->date ? $tx->date->format('Y-m-d') : '',
+                    'date' => $tx->date ? $tx->date->toIso8601String() : '',
                     'type' => $tx->type,
                     'amount' => (float) $tx->amount,
                     'category' => $tx->category?->name ?? '-',

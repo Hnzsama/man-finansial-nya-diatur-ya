@@ -92,9 +92,22 @@ export function buildHtmlReport(
     </div>`
   )).join('');
 
-  const txRows = rows.map((r, i) => (
-    `<tr style="background:${i % 2 === 0 ? '#FFFFFF' : '#fafafa'}; transition: background-color 0.2s; page-break-inside: avoid; break-inside: avoid;">
-      <td style="padding:12px 16px;border-bottom:1px solid #f4f4f5;font-size:13px;color:#27272a;font-weight:400;">${r.date}</td>
+  const txRows = rows.map((r, i) => {
+    let dateFormatted = r.date;
+    try {
+      const d = new Date(r.date);
+      if (!isNaN(d.getTime())) {
+        const day = String(d.getDate()).padStart(2, '0');
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const year = d.getFullYear();
+        const hours = String(d.getHours()).padStart(2, '0');
+        const minutes = String(d.getMinutes()).padStart(2, '0');
+        dateFormatted = `${day}-${month}-${year} ${hours}:${minutes}`;
+      }
+    } catch (e) {}
+
+    return `<tr style="background:${i % 2 === 0 ? '#FFFFFF' : '#fafafa'}; transition: background-color 0.2s; page-break-inside: avoid; break-inside: avoid;">
+      <td style="padding:12px 16px;border-bottom:1px solid #f4f4f5;font-size:13px;color:#27272a;font-weight:400;">${dateFormatted}</td>
       <td style="padding:12px 16px;border-bottom:1px solid #f4f4f5;">
         <span style="display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;
           background:${r.type === 'income' ? '#ecfdf5' : '#fef2f2'};color:${r.type === 'income' ? '#065f46' : '#991b1b'}; border: 1px solid ${r.type === 'income' ? '#a7f3d0' : '#fecaca'};">
@@ -107,8 +120,8 @@ export function buildHtmlReport(
       <td style="padding:12px 16px;border-bottom:1px solid #f4f4f5;font-size:13px;color:#27272a;">${r.category}</td>
       <td style="padding:12px 16px;border-bottom:1px solid #f4f4f5;font-size:13px;color:#27272a;">${r.wallet}</td>
       <td style="padding:12px 16px;border-bottom:1px solid #f4f4f5;font-size:13px;color:#71717a;">${r.notes || '-'}</td>
-    </tr>`
-  )).join('');
+    </tr>`;
+  }).join('');
 
   return `<!DOCTYPE html>
 <html lang="id">
@@ -122,11 +135,11 @@ export function buildHtmlReport(
     
     @page {
       size: ${orientation === 'landscape' ? 'A4 landscape' : 'A4 portrait'};
-      margin: 15mm 20mm;
+      margin: 0;
     }
     
     @media print{
-      body{background:#fff;}
+      body{background:#fff; padding: 15mm 20mm;}
       .no-print{display:none!important;}
       .page{box-shadow:none!important;margin:0!important;border:none!important;max-width:100%!important;padding:0!important;}
       h1, h2, h3, h4, h5, h6, .section-title { page-break-after: avoid; break-after: avoid; }
