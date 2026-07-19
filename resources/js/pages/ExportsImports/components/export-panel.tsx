@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
 import { buildXlsXml, type XlsRow } from './xls-builder';
 import { buildHtmlReport, type HtmlReportRow } from './html-report-builder';
@@ -136,6 +137,12 @@ export function ExportPanel({ wallets, realTransactions }: ExportPanelProps) {
   const [selectedWallet, setSelectedWallet] = useState('all');
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
 
+  // Advanced PDF Export Options
+  const [orientation, setOrientation] = useState<'portrait' | 'landscape'>('portrait');
+  const [includeCharts, setIncludeCharts] = useState(true);
+  const [includeStats, setIncludeStats] = useState(true);
+  const [includeTable, setIncludeTable] = useState(true);
+
   const startDate = dateRange?.from ? format(dateRange.from, 'yyyy-MM-dd') : '';
   const endDate = dateRange?.to ? format(dateRange.to, 'yyyy-MM-dd') : '';
 
@@ -172,10 +179,10 @@ export function ExportPanel({ wallets, realTransactions }: ExportPanelProps) {
     const filenameBase = `finance_report_${exportScope}_${dateStr}_${timeSuffix}`;
 
     if (exportFormat === 'html') {
-      const content = buildHtmlReport(exportScope, walletLabel, startDate, endDate, filteredRows);
+      const content = buildHtmlReport(exportScope, walletLabel, startDate, endDate, filteredRows, { orientation, includeCharts, includeStats, includeTable });
       downloadBlob(content, `${filenameBase}.html`, 'text/html;charset=utf-8');
     } else if (exportFormat === 'pdf') {
-      const content = buildHtmlReport(exportScope, walletLabel, startDate, endDate, filteredRows);
+      const content = buildHtmlReport(exportScope, walletLabel, startDate, endDate, filteredRows, { orientation, includeCharts, includeStats, includeTable });
       const printWindow = window.open('', '_blank');
       if (printWindow) {
         printWindow.document.write(content);
@@ -277,6 +284,38 @@ export function ExportPanel({ wallets, realTransactions }: ExportPanelProps) {
             </SelectContent>
           </Select>
         </div>
+
+        {(exportFormat === 'pdf' || exportFormat === 'html') && (
+          <div className="space-y-3 pt-2 border-t border-border/50">
+            <h4 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Advanced PDF Options</h4>
+            <div className="space-y-2">
+              <Label htmlFor="pdf-orientation">Page Orientation</Label>
+              <Select value={orientation} onValueChange={(v: any) => setOrientation(v)}>
+                <SelectTrigger id="pdf-orientation" className="h-9">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="portrait">Portrait (Tegak)</SelectItem>
+                  <SelectItem value="landscape">Landscape (Mendatar)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid grid-cols-3 gap-2 pt-1">
+              <label className="flex items-center gap-2 text-xs font-medium cursor-pointer">
+                <Checkbox checked={includeStats} onCheckedChange={(v) => setIncludeStats(!!v)} id="chk-stats" />
+                <span>Ringkasan</span>
+              </label>
+              <label className="flex items-center gap-2 text-xs font-medium cursor-pointer">
+                <Checkbox checked={includeCharts} onCheckedChange={(v) => setIncludeCharts(!!v)} id="chk-charts" />
+                <span>Grafik</span>
+              </label>
+              <label className="flex items-center gap-2 text-xs font-medium cursor-pointer">
+                <Checkbox checked={includeTable} onCheckedChange={(v) => setIncludeTable(!!v)} id="chk-table" />
+                <span>Tabel</span>
+              </label>
+            </div>
+          </div>
+        )}
 
         {exportFormat === 'html' && (
           <div className="flex items-start gap-2 text-xs text-muted-foreground bg-muted/30 rounded-lg px-3 py-2 border border-border/40">

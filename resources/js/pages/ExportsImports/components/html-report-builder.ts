@@ -7,13 +7,26 @@ export interface HtmlReportRow {
   notes: string;
 }
 
+export interface ExportOptions {
+  includeCharts?: boolean;
+  includeTable?: boolean;
+  includeStats?: boolean;
+  orientation?: 'portrait' | 'landscape';
+}
+
 export function buildHtmlReport(
   scope: string,
   walletLabel: string,
   dateFrom: string,
   dateTo: string,
   rows: HtmlReportRow[],
+  options: ExportOptions = {},
 ): string {
+  const includeCharts = options.includeCharts !== false;
+  const includeTable = options.includeTable !== false;
+  const includeStats = options.includeStats !== false;
+  const orientation = options.orientation || 'portrait';
+
   const now = new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
   const totalIncome = rows.filter(r => r.type === 'income').reduce((s, r) => s + r.amount, 0);
   const totalExpense = rows.filter(r => r.type === 'expense').reduce((s, r) => s + r.amount, 0);
@@ -80,7 +93,7 @@ export function buildHtmlReport(
   )).join('');
 
   const txRows = rows.map((r, i) => (
-    `<tr style="background:${i % 2 === 0 ? '#FFFFFF' : '#fafafa'}; transition: background-color 0.2s;">
+    `<tr style="background:${i % 2 === 0 ? '#FFFFFF' : '#fafafa'}; transition: background-color 0.2s; page-break-inside: avoid; break-inside: avoid;">
       <td style="padding:12px 16px;border-bottom:1px solid #f4f4f5;font-size:13px;color:#27272a;font-weight:400;">${r.date}</td>
       <td style="padding:12px 16px;border-bottom:1px solid #f4f4f5;">
         <span style="display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;
@@ -106,12 +119,22 @@ export function buildHtmlReport(
   <style>
     *{margin:0;padding:0;box-sizing:border-box;}
     body{font-family:'Inter',sans-serif;background:#fafafa;color:#09090b;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    
+    @page {
+      size: ${orientation === 'landscape' ? 'A4 landscape' : 'A4 portrait'};
+      margin: 15mm 20mm;
+    }
+    
     @media print{
       body{background:#fff;}
       .no-print{display:none!important;}
-      .page{box-shadow:none!important;margin:0!important;border:none!important;max-width:100%!important;}
+      .page{box-shadow:none!important;margin:0!important;border:none!important;max-width:100%!important;padding:0!important;}
+      h1, h2, h3, h4, h5, h6, .section-title { page-break-after: avoid; break-after: avoid; }
+      tr, .summary-card, .chart-box { page-break-inside: avoid; break-inside: avoid; }
+      .section { page-break-inside: auto; break-inside: auto; }
     }
-    .page{max-width:1000px;margin:40px auto;background:#fff;border-radius:8px;border:1px solid #e4e4e7;box-shadow:0 1px 3px 0 rgba(0,0,0,0.1),0 1px 2px 0 rgba(0,0,0,0.06);overflow:hidden;}
+    
+    .page{max-width:${orientation === 'landscape' ? '1200px' : '1000px'};margin:40px auto;background:#fff;border-radius:8px;border:1px solid #e4e4e7;box-shadow:0 1px 3px 0 rgba(0,0,0,0.1),0 1px 2px 0 rgba(0,0,0,0.06);overflow:hidden;}
     .header{padding:32px 40px;border-bottom:1px solid #e4e4e7;position:relative;background:#ffffff;}
     .header-title{font-size:24px;font-weight:700;color:#09090b;letter-spacing:-.5px;display:flex;align-items:center;gap:10px;}
     .header-subtitle{font-size:14px;color:#71717a;margin-top:6px;font-weight:400;}
@@ -127,13 +150,19 @@ export function buildHtmlReport(
     .summary-card.net{border-left:4px solid #6366f1;}
     .sc-label{font-size:12px;font-weight:500;color:#71717a;letter-spacing:.3px;text-transform:uppercase;}
     .sc-value{font-size:24px;font-weight:700;margin-top:8px;color:#09090b;letter-spacing:-0.5px;}
-    .charts-row{display:grid;grid-template-columns:1.2fr 1fr;gap:24px;align-items:start;}
+    .charts-row{display:grid;grid-template-columns:${orientation === 'landscape' ? '1.2fr 1fr' : '1.2fr 1fr'};gap:24px;align-items:start;}
+    
+    @media (max-width: 768px) {
+      .charts-row { grid-template-columns: 1fr; }
+      .summary-grid { grid-template-columns: 1fr; }
+    }
+    
     .chart-box{background:#ffffff;border:1px solid #e4e4e7;border-radius:8px;padding:24px;box-shadow:0 1px 2px 0 rgba(0,0,0,0.05);}
     .chart-box-title{font-size:14px;font-weight:600;color:#09090b;margin-bottom:16px;}
     .chart-legend{display:flex;gap:16px;margin-bottom:16px;}
     .legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:#71717a;}
     .legend-dot{width:10px;height:10px;border-radius:2px;}
-    .table-container{width:100%;border:1px solid #e4e4e7;border-radius:8px;overflow:hidden;box-shadow:0 1px 2px 0 rgba(0,0,0,0.05);}
+    .table-container{width:100%;border:1px solid #e4e4e7;border-radius:8px;overflow:hidden;box-shadow:0 1px 2px 0 rgba(0,0,0,0.05);page-break-inside: auto; break-inside: auto;}
     .tx-table{width:100%;border-collapse:collapse;text-align:left;}
     .tx-table th{padding:12px 16px;background:#fafafa;color:#71717a;font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid #e4e4e7;}
     .print-btn{display:inline-flex;align-items:center;gap:8px;background:#18181b;color:#ffffff;border:none;border-radius:6px;padding:8px 16px;font-size:13px;font-weight:500;cursor:pointer;margin-bottom:20px;transition:background-color 0.2s;box-shadow:0 1px 2px 0 rgba(0,0,0,0.05);}
@@ -142,7 +171,7 @@ export function buildHtmlReport(
   </style>
 </head>
 <body>
-  <div style="padding:24px 40px 0; max-width:1000px; margin:0 auto;" class="no-print">
+  <div style="padding:24px 40px 0; max-width:${orientation === 'landscape' ? '1200px' : '1000px'}; margin:0 auto;" class="no-print">
     <button class="print-btn" onclick="window.print()">
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-printer"><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 9V3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v6"/><rect x="6" y="14" width="12" height="8" rx="1"/></svg>
       Cetak / Simpan PDF
@@ -162,6 +191,8 @@ export function buildHtmlReport(
       <div class="meta-item">Periode: <strong>${dateFrom || 'Semua'} s/d ${dateTo || 'Sekarang'}</strong></div>
       <div class="meta-item">Dompet: <strong>${walletLabel}</strong></div>
     </div>
+    
+    ${includeStats ? `
     <div class="section">
       <div class="section-title">Ringkasan Finansial</div>
       <div class="summary-grid">
@@ -170,6 +201,9 @@ export function buildHtmlReport(
         <div class="summary-card net"><div class="sc-label">Net Cash Flow</div><div class="sc-value" style="color: ${netCash >= 0 ? '#059669' : '#dc2626'}">${fmt(netCash)}</div></div>
       </div>
     </div>
+    ` : ''}
+    
+    ${includeCharts ? `
     <div class="section">
       <div class="section-title">Visualisasi Data</div>
       <div class="charts-row">
@@ -197,7 +231,10 @@ export function buildHtmlReport(
         </div>
       </div>
     </div>
-    <div class="section">
+    ` : ''}
+    
+    ${includeTable ? `
+    <div class="section" style="page-break-before: auto;">
       <div class="section-title">Rincian Transaksi</div>
       <div class="table-container">
         <table class="tx-table">
@@ -206,6 +243,8 @@ export function buildHtmlReport(
         </table>
       </div>
     </div>
+    ` : ''}
+    
     <div class="footer">Laporan keuangan ini digenerate secara otomatis oleh Aplikasi Man Finance.</div>
   </div>
 </body>
