@@ -1,4 +1,4 @@
-import { Head } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import {
   IconPlus,
   IconSearch,
@@ -6,6 +6,8 @@ import {
 } from '@tabler/icons-react';
 import * as LucideIcons from 'lucide-react';
 import React, { useState, useMemo } from 'react';
+import { toast } from 'sonner';
+import { ConfirmDialog } from '@/components/confirm-dialog';
 import {
   flexRender,
   getCoreRowModel,
@@ -13,7 +15,7 @@ import {
   getPaginationRowModel,
   useReactTable
 } from "@tanstack/react-table";
-import { index as subscriptionIndex } from '@/actions/App/Http/Controllers/SubscriptionController';
+import { index as subscriptionIndex, processPayment as subPayment } from '@/actions/App/Http/Controllers/SubscriptionController';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -112,7 +114,28 @@ export default function SubscriptionsIndex({ subscriptions, wallets, categories,
     setIsEditSheetOpen(true);
   };
 
-  const columns = useMemo(() => getColumns(openEditSheet), []);
+  const [payingSubscription, setPayingSubscription] = useState<Subscription | null>(null);
+
+  const handlePayEarly = (sub: Subscription) => {
+    setPayingSubscription(sub);
+  };
+
+  const confirmPayEarly = () => {
+    if (!payingSubscription) return;
+    router.post(
+      subPayment.url(payingSubscription.id),
+      {},
+      {
+        preserveScroll: true,
+        onSuccess: () => {
+          setPayingSubscription(null);
+          toast.success("Recurring payment processed successfully.");
+        }
+      }
+    );
+  };
+
+  const columns = useMemo(() => getColumns(openEditSheet, handlePayEarly), []);
 
   const table = useReactTable({
     data: filteredSubscriptions,
@@ -221,6 +244,16 @@ export default function SubscriptionsIndex({ subscriptions, wallets, categories,
         wallets={wallets}
         categories={categories}
         formatCurrency={formatCurrency}
+      />
+
+      <ConfirmDialog
+        open={!!payingSubscription}
+        onOpenChange={(open) => !open && setPayingSubscription(null)}
+        title="Proses Pembayaran Berulang"
+        description={payingSubscription ? `Apakah Anda yakin ingin memproses pembayaran berulang untuk langganan "${payingSubscription.name}" lebih awal saat ini?` : ''}
+        onConfirm={confirmPayEarly}
+        variant="default"
+        confirmText="Proses"
       />
     </>
   );

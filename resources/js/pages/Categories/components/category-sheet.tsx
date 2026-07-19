@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from '@inertiajs/react';
 import { toast } from 'sonner';
+import { ConfirmDialog } from '@/components/confirm-dialog';
 import * as LucideIcons from 'lucide-react';
 import {
   IconChartPie,
@@ -130,17 +131,22 @@ export function CategorySheet({ isOpen, onOpenChange, mode, category, onSuccess 
     }
   };
 
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
   const handleDelete = () => {
     if (!category) return;
-    if (confirm("Are you sure you want to delete this category? All related transactions will lose their category.")) {
-      form.delete(destroy.url(category.id), {
-        onSuccess: () => {
-          onOpenChange(false);
-          toast.success('Category successfully deleted');
-          onSuccess?.();
-        },
-      });
-    }
+    setShowDeleteConfirm(true);
+  };
+
+  const confirmDelete = () => {
+    if (!category) return;
+    form.delete(destroy.url(category.id), {
+      onSuccess: () => {
+        onOpenChange(false);
+        toast.success('Category successfully deleted');
+        onSuccess?.();
+      },
+    });
   };
 
   return (
@@ -278,6 +284,15 @@ export function CategorySheet({ isOpen, onOpenChange, mode, category, onSuccess 
           </SheetFooter>
         </form>
       </SheetContent>
+      {category && (
+        <ConfirmDialog
+          open={showDeleteConfirm}
+          onOpenChange={setShowDeleteConfirm}
+          title="Hapus Kategori"
+          description={`Apakah Anda yakin ingin menghapus kategori "${category.name}"? Semua transaksi yang terkait akan kehilangan kategorinya.`}
+          onConfirm={confirmDelete}
+        />
+      )}
     </Sheet>
   );
 }

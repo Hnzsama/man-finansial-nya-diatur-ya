@@ -57,7 +57,8 @@ const formatCurrency = (value: number | string) => {
 };
 
 export const getColumns = (
-  onEdit: (sub: Subscription) => void
+  onEdit: (sub: Subscription) => void,
+  onPayEarly?: (sub: Subscription) => void
 ): ColumnDef<Subscription>[] => [
   {
     accessorKey: "name",
@@ -157,15 +158,8 @@ export const getColumns = (
     cell: ({ row }) => {
       const active = row.original.is_active;
       const handlePay = () => {
-        if (confirm(`Do you want to process recurring payment for subscription "${row.original.name}" now early?`)) {
-          router.post(
-            subPayment.url(row.original.id),
-            {},
-            {
-              preserveScroll: true,
-              onSuccess: () => toast.success("Recurring payment processed successfully.")
-            }
-          );
+        if (onPayEarly) {
+          onPayEarly(row.original);
         }
       };
 

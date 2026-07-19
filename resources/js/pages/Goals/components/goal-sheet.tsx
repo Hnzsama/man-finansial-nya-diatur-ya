@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from '@inertiajs/react';
 import * as LucideIcons from 'lucide-react';
+import { ConfirmDialog } from '@/components/confirm-dialog';
 import {
   IconCheck,
 } from '@tabler/icons-react';
@@ -129,17 +130,22 @@ export function GoalSheet({ isOpen, onOpenChange, mode, goal, onSuccess }: GoalS
     }
   };
 
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
   const handleDelete = () => {
     if (!goal) return;
-    if (confirm(`Are you sure you want to delete the goal "${goal.name}"?`)) {
-      form.delete(goalDestroy.url(goal.id), {
-        onSuccess: () => {
-          onOpenChange(false);
-          form.reset();
-          onSuccess?.();
-        },
-      });
-    }
+    setShowDeleteConfirm(true);
+  };
+
+  const confirmDelete = () => {
+    if (!goal) return;
+    form.delete(goalDestroy.url(goal.id), {
+      onSuccess: () => {
+        onOpenChange(false);
+        form.reset();
+        onSuccess?.();
+      },
+    });
   };
 
   return (
@@ -252,6 +258,15 @@ export function GoalSheet({ isOpen, onOpenChange, mode, goal, onSuccess }: GoalS
           </SheetFooter>
         </form>
       </SheetContent>
+      {goal && (
+        <ConfirmDialog
+          open={showDeleteConfirm}
+          onOpenChange={setShowDeleteConfirm}
+          title="Hapus Target"
+          description={`Apakah Anda yakin ingin menghapus target finansial "${goal.name}"? Tindakan ini tidak dapat dibatalkan.`}
+          onConfirm={confirmDelete}
+        />
+      )}
     </Sheet>
   );
 }

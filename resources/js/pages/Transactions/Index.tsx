@@ -3,6 +3,7 @@ import { IconPlus, IconArrowsRightLeft, IconChevronLeft, IconChevronRight, IconC
 import React, { useState } from 'react';
 import { index as transactionIndex, destroy as transactionDestroy } from '@/actions/App/Http/Controllers/TransactionController';
 import { Button } from '@/components/ui/button';
+import { ConfirmDialog } from '@/components/confirm-dialog';
 import AppLayout from '@/layouts/app-layout';
 import type { BreadcrumbItem } from '@/types';
 import type { Transaction, Wallet, Category } from '@/types';
@@ -75,12 +76,20 @@ export default function TransactionsIndex({ transactions, wallets, categories, s
         setIsEditSheetOpen(true);
     };
 
+  const [deletingTransaction, setDeletingTransaction] = useState<Transaction | null>(null);
+
     const handleDelete = (transaction: Transaction) => {
-        if (confirm(`Are you sure you want to delete this transaction?`)) {
-            destroy(transactionDestroy.url({ transaction: transaction.id }), {
-                preserveScroll: true,
-            });
-        }
+        setDeletingTransaction(transaction);
+    };
+
+    const confirmDelete = () => {
+        if (!deletingTransaction) return;
+        destroy(transactionDestroy.url({ transaction: deletingTransaction.id }), {
+            preserveScroll: true,
+            onSuccess: () => {
+                setDeletingTransaction(null);
+            }
+        });
     };
 
     const columns = useTransactionColumns({ openEditSheet, handleDelete });
@@ -156,6 +165,14 @@ export default function TransactionsIndex({ transactions, wallets, categories, s
                 isOpen={isTransferSheetOpen}
                 onOpenChange={setIsTransferSheetOpen}
                 wallets={wallets}
+            />
+
+            <ConfirmDialog
+                open={!!deletingTransaction}
+                onOpenChange={(open) => !open && setDeletingTransaction(null)}
+                title="Hapus Transaksi"
+                description="Apakah Anda yakin ingin menghapus transaksi ini? Tindakan ini tidak dapat dibatalkan."
+                onConfirm={confirmDelete}
             />
         </>
     );

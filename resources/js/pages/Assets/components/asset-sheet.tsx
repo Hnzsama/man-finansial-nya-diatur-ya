@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from '@inertiajs/react';
 import { toast } from 'sonner';
+import { ConfirmDialog } from '@/components/confirm-dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { AmountInput } from '@/components/ui/amount-input';
@@ -93,18 +94,23 @@ export function AssetSheet({
     }
   };
 
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
   const handleDelete = () => {
     if (!asset) return;
-    if (confirm(`Are you sure you want to delete the asset "${asset.name}"?`)) {
-      form.delete(assetDestroy.url(asset.id), {
-        preserveScroll: true,
-        onSuccess: () => {
-          onOpenChange(false);
-          toast.success('Asset successfully deleted.');
-          onSuccess?.();
-        },
-      });
-    }
+    setShowDeleteConfirm(true);
+  };
+
+  const confirmDelete = () => {
+    if (!asset) return;
+    form.delete(assetDestroy.url(asset.id), {
+      preserveScroll: true,
+      onSuccess: () => {
+        onOpenChange(false);
+        toast.success('Asset successfully deleted.');
+        onSuccess?.();
+      },
+    });
   };
 
   return (
@@ -194,6 +200,15 @@ export function AssetSheet({
           </SheetFooter>
         </form>
       </SheetContent>
+      {asset && (
+        <ConfirmDialog
+          open={showDeleteConfirm}
+          onOpenChange={setShowDeleteConfirm}
+          title="Hapus Aset"
+          description={`Apakah Anda yakin ingin menghapus aset "${asset.name}"? Tindakan ini tidak dapat dibatalkan.`}
+          onConfirm={confirmDelete}
+        />
+      )}
     </Sheet>
   );
 }

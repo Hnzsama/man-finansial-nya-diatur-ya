@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from '@inertiajs/react';
 import { toast } from 'sonner';
+import { ConfirmDialog } from '@/components/confirm-dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { AmountInput } from '@/components/ui/amount-input';
@@ -126,18 +127,23 @@ export function SubscriptionSheet({
     }
   };
 
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
   const handleDelete = () => {
     if (!subscription) return;
-    if (confirm(`Are you sure you want to delete the subscription "${subscription.name}"?`)) {
-      form.delete(subDestroy.url(subscription.id), {
-        preserveScroll: true,
-        onSuccess: () => {
-          onOpenChange(false);
-          toast.success('Subscription successfully deleted.');
-          onSuccess?.();
-        },
-      });
-    }
+    setShowDeleteConfirm(true);
+  };
+
+  const confirmDelete = () => {
+    if (!subscription) return;
+    form.delete(subDestroy.url(subscription.id), {
+      preserveScroll: true,
+      onSuccess: () => {
+        onOpenChange(false);
+        toast.success('Subscription successfully deleted.');
+        onSuccess?.();
+      },
+    });
   };
 
   return (
@@ -296,6 +302,15 @@ export function SubscriptionSheet({
           </SheetFooter>
         </form>
       </SheetContent>
+      {subscription && (
+        <ConfirmDialog
+          open={showDeleteConfirm}
+          onOpenChange={setShowDeleteConfirm}
+          title="Hapus Langganan"
+          description={`Apakah Anda yakin ingin menghapus langganan "${subscription.name}"? Tindakan ini tidak dapat dibatalkan.`}
+          onConfirm={confirmDelete}
+        />
+      )}
     </Sheet>
   );
 }

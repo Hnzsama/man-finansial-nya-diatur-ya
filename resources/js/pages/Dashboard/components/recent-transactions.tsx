@@ -19,6 +19,7 @@ import {
 } from "@tabler/icons-react";
 import { router } from '@inertiajs/react';
 import { toast } from "sonner";
+import { ConfirmDialog } from '@/components/confirm-dialog';
 import * as LucideIcons from 'lucide-react';
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Badge } from "@/components/ui/badge";
@@ -190,7 +191,7 @@ function TableCellViewer({ item }: { item: Transaction }) {
   );
 }
 
-const columns: ColumnDef<Transaction>[] = [
+const getColumns = (onDelete: (id: number) => void): ColumnDef<Transaction>[] => [
   {
     id: "select",
     header: ({ table }) => (
@@ -293,12 +294,7 @@ const columns: ColumnDef<Transaction>[] = [
     cell: ({ row }) => {
       const transactionId = row.original.id;
       const handleDelete = () => {
-        if (confirm("Are you sure you want to delete this transaction?")) {
-          router.delete(`/transactions/${transactionId}`, {
-            preserveScroll: true,
-            onSuccess: () => toast.success("Transaction successfully deleted")
-          });
-        }
+        onDelete(transactionId);
       };
       return (
         <DropdownMenu>
@@ -330,6 +326,21 @@ export function RecentTransactions({ data, wallets }: { data: Transaction[], wal
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [pagination, setPagination] = React.useState({ pageIndex: 0, pageSize: 10 });
+
+  const [deletingTransactionId, setDeletingTransactionId] = React.useState<number | null>(null);
+
+  const columns = React.useMemo(() => getColumns((id) => setDeletingTransactionId(id)), []);
+
+  const confirmDelete = () => {
+    if (!deletingTransactionId) return;
+    router.delete(`/transactions/${deletingTransactionId}`, {
+      preserveScroll: true,
+      onSuccess: () => {
+        setDeletingTransactionId(null);
+        toast.success("Transaction successfully deleted");
+      }
+    });
+  };
 
   const table = useReactTable({
     data,
@@ -491,6 +502,14 @@ export function RecentTransactions({ data, wallets }: { data: Transaction[], wal
           )}
         </div>
       </TabsContent>
+
+      <ConfirmDialog
+        open={!!deletingTransactionId}
+        onOpenChange={(open) => !open && setDeletingTransactionId(null)}
+        title="Hapus Transaksi"
+        description="Apakah Anda yakin ingin menghapus transaksi ini? Tindakan ini tidak dapat dibatalkan."
+        onConfirm={confirmDelete}
+      />
     </Tabs>
   );
 }

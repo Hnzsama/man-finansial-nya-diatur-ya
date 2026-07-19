@@ -23,6 +23,7 @@ import React, { useState, useMemo } from 'react';
 
 import { destroy } from '@/actions/App/Http/Controllers/WalletController';
 import { Button } from '@/components/ui/button';
+import { ConfirmDialog } from '@/components/confirm-dialog';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -98,10 +99,19 @@ export default function Index({ wallets, stats }: { wallets: Wallet[], stats: St
         setEditingWallet(wallet);
     };
 
+    const [deletingWalletId, setDeletingWalletId] = useState<number | null>(null);
+
     const handleDelete = (id: number) => {
-        if (confirm('Are you sure you want to delete this wallet?')) {
-            destroyWallet(destroy.url(id));
-        }
+        setDeletingWalletId(id);
+    };
+
+    const confirmDelete = () => {
+        if (!deletingWalletId) return;
+        destroyWallet(destroy.url(deletingWalletId), {
+            onSuccess: () => {
+                setDeletingWalletId(null);
+            }
+        });
     };
 
     const columns = useWalletColumns({ openEdit, handleDelete });
@@ -273,6 +283,14 @@ export default function Index({ wallets, stats }: { wallets: Wallet[], stats: St
                 onOpenChange={(open) => !open && setEditingWallet(null)}
                 mode="edit"
                 wallet={editingWallet}
+            />
+
+            <ConfirmDialog
+                open={!!deletingWalletId}
+                onOpenChange={(open) => !open && setDeletingWalletId(null)}
+                title="Hapus Dompet"
+                description="Apakah Anda yakin ingin menghapus dompet ini? Semua transaksi yang terkait dengan dompet ini juga akan terhapus."
+                onConfirm={confirmDelete}
             />
         </>
     );

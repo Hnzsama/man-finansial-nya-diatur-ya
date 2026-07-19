@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from '@inertiajs/react';
+import { ConfirmDialog } from '@/components/confirm-dialog';
 import {
   IconUser,
   IconCalendar,
@@ -121,17 +122,22 @@ export function DebtSheet({
     }
   };
 
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
   const handleDelete = () => {
     if (!debt) return;
-    if (confirm(`Are you sure you want to delete the loan "${debt.counterparty_name}"?`)) {
-      editForm.delete(debtDestroy.url(debt.id), {
-        preserveScroll: true,
-        onSuccess: () => {
-          onOpenChange(false);
-          onSuccess?.();
-        },
-      });
-    }
+    setShowDeleteConfirm(true);
+  };
+
+  const confirmDelete = () => {
+    if (!debt) return;
+    editForm.delete(debtDestroy.url(debt.id), {
+      preserveScroll: true,
+      onSuccess: () => {
+        onOpenChange(false);
+        onSuccess?.();
+      },
+    });
   };
 
   const processing = mode === 'add' ? form.processing : editForm.processing;
@@ -374,6 +380,15 @@ export function DebtSheet({
           </SheetFooter>
         </form>
       </SheetContent>
+      {debt && (
+        <ConfirmDialog
+          open={showDeleteConfirm}
+          onOpenChange={setShowDeleteConfirm}
+          title="Hapus Pinjaman / Hutang"
+          description={`Apakah Anda yakin ingin menghapus catatan pinjaman/hutang untuk "${debt.counterparty_name}"? Tindakan ini tidak dapat dibatalkan.`}
+          onConfirm={confirmDelete}
+        />
+      )}
     </Sheet>
   );
 }
