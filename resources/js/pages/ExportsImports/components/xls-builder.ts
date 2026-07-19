@@ -123,7 +123,10 @@ export function buildXlsXml(
     <Style ss:ID="s67">
       <Alignment ss:Horizontal="Left" ss:Vertical="Center"/>
       <Borders>
-        <Border ss:Position="All" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#D0D5DD"/>
+        <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#D0D5DD"/>
+        <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#D0D5DD"/>
+        <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#D0D5DD"/>
+        <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#D0D5DD"/>
       </Borders>
       <Font ss:FontName="Calibri" ss:Size="11" ss:Bold="1" ss:Color="#344054"/>
       <Interior ss:Color="#F0F4FF" ss:Pattern="Solid"/>
@@ -131,7 +134,10 @@ export function buildXlsXml(
     <Style ss:ID="s68">
       <Alignment ss:Horizontal="Right" ss:Vertical="Center"/>
       <Borders>
-        <Border ss:Position="All" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#D0D5DD"/>
+        <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#D0D5DD"/>
+        <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#D0D5DD"/>
+        <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#D0D5DD"/>
+        <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#D0D5DD"/>
       </Borders>
       <Font ss:FontName="Calibri" ss:Size="11" ss:Bold="1" ss:Color="#12B76A"/>
       <Interior ss:Color="#ECFDF3" ss:Pattern="Solid"/>
@@ -140,7 +146,10 @@ export function buildXlsXml(
     <Style ss:ID="s69">
       <Alignment ss:Horizontal="Right" ss:Vertical="Center"/>
       <Borders>
-        <Border ss:Position="All" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#D0D5DD"/>
+        <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#D0D5DD"/>
+        <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#D0D5DD"/>
+        <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#D0D5DD"/>
+        <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#D0D5DD"/>
       </Borders>
       <Font ss:FontName="Calibri" ss:Size="11" ss:Bold="1" ss:Color="#F04438"/>
       <Interior ss:Color="#FEF3F2" ss:Pattern="Solid"/>
@@ -149,7 +158,10 @@ export function buildXlsXml(
     <Style ss:ID="s70">
       <Alignment ss:Horizontal="Right" ss:Vertical="Center"/>
       <Borders>
-        <Border ss:Position="All" ss:LineStyle="Continuous" ss:Weight="2" ss:Color="#3B5BDB"/>
+        <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="2" ss:Color="#3B5BDB"/>
+        <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="2" ss:Color="#3B5BDB"/>
+        <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="2" ss:Color="#3B5BDB"/>
+        <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="2" ss:Color="#3B5BDB"/>
       </Borders>
       <Font ss:FontName="Calibri" ss:Size="12" ss:Bold="1" ss:Color="#3B5BDB"/>
       <Interior ss:Color="#EEF2FF" ss:Pattern="Solid"/>
@@ -158,7 +170,10 @@ export function buildXlsXml(
     <Style ss:ID="s71">
       <Alignment ss:Horizontal="Left" ss:Vertical="Center"/>
       <Borders>
-        <Border ss:Position="All" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#1D2D50"/>
+        <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#1D2D50"/>
+        <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#1D2D50"/>
+        <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#1D2D50"/>
+        <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#1D2D50"/>
       </Borders>
       <Font ss:FontName="Calibri" ss:Size="11" ss:Bold="1" ss:Color="#FFFFFF"/>
       <Interior ss:Color="#1D2D50" ss:Pattern="Solid"/>
