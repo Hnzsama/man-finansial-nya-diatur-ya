@@ -85,8 +85,13 @@ export function EventDrawer({
                           <IconRepeat className="h-4 w-4" />
                         </div>
                       )}
-                      {(event.type === 'debt_payable' || event.type === 'debt_receivable') && (
+                      {event.type === 'debt_payable' && (
                         <div className="p-2 bg-indigo-500/10 text-indigo-600 rounded-lg dark:text-indigo-400">
+                          <IconCoins className="h-4 w-4" />
+                        </div>
+                      )}
+                      {event.type === 'debt_receivable' && (
+                        <div className="p-2 bg-purple-500/10 text-purple-600 rounded-lg dark:text-purple-400">
                           <IconCoins className="h-4 w-4" />
                         </div>
                       )}

@@ -322,11 +322,12 @@ export default function CalendarIndex({
                               key={idx}
                               title={`${evt.title} (${formatCurrency(evt.amount)})`}
                               className={`text-[9px] sm:text-[10px] leading-none px-1.5 py-1 rounded border flex items-center justify-between font-medium truncate gap-1 shadow-sm transition-all hover:brightness-95 ${
-                                evt.type === 'income' ? 'bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/20' :
-                                evt.type === 'expense' ? 'bg-destructive/10 text-destructive border-destructive/20' :
-                                evt.type === 'goal' ? 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 border-yellow-500/20' :
-                                evt.type === 'subscription' ? 'bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-500/20' :
-                                'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20'
+                                  evt.type === 'income' ? 'bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/20' :
+                                  evt.type === 'expense' ? 'bg-destructive/10 text-destructive border-destructive/20' :
+                                  evt.type === 'goal' ? 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 border-yellow-500/20' :
+                                  evt.type === 'subscription' ? 'bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-500/20' :
+                                  evt.type === 'debt_payable' ? 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20' :
+                                  'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20'
                               }`}
                             >
                               <div className="flex items-center gap-0.5 truncate flex-1">
