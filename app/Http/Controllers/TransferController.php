@@ -48,7 +48,7 @@ class TransferController extends Controller
                 // Get or create transfer categories
                 $transferOutCategory = Category::firstOrCreate([
                     'user_id' => $user->id,
-                    'name' => 'Transfer Keluar',
+                    'name' => 'Transfer Fund',
                     'type' => 'expense',
                 ], [
                     'icon' => 'ArrowsRightLeft',
@@ -57,7 +57,7 @@ class TransferController extends Controller
 
                 $transferInCategory = Category::firstOrCreate([
                     'user_id' => $user->id,
-                    'name' => 'Transfer Masuk',
+                    'name' => 'Transfer Fund',
                     'type' => 'income',
                 ], [
                     'icon' => 'ArrowsRightLeft',

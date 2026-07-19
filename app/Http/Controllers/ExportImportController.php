@@ -143,7 +143,24 @@ class ExportImportController extends Controller
 
                     // 2. Resolve Category
                     $categoryId = null;
-                    if ($categoryName) {
+                    $normalizedCategoryName = trim($categoryName);
+
+                    // Check if it's a transfer based on category name or notes
+                    $isTransfer = in_array(strtolower($normalizedCategoryName), ['transfer masuk', 'transfer keluar', 'transfer in', 'transfer out', 'transfer fund'])
+                        || str_starts_with(strtolower($notes), 'transfer to')
+                        || str_starts_with(strtolower($notes), 'transfer from');
+
+                    if ($isTransfer) {
+                        $category = Category::firstOrCreate([
+                            'user_id' => $user->id,
+                            'name' => 'Transfer Fund',
+                            'type' => $type,
+                        ], [
+                            'icon' => 'ArrowsRightLeft',
+                            'color' => $type === 'income' ? '#10B981' : '#EF4444',
+                        ]);
+                        $categoryId = $category->id;
+                    } elseif ($categoryName && $categoryName !== '-') {
                         $category = Category::firstOrCreate([
                             'user_id' => $user->id,
                             'name' => $categoryName,
