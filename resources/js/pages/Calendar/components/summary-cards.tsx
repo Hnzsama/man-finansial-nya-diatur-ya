@@ -108,7 +108,7 @@ export function SummaryCards({
           </CardTitle>
         </CardHeader>
         <CardFooter className="text-xs text-muted-foreground">
-          Received in this calendar view month
+          Received in this calendar view month (excludes Transfer Funds)
         </CardFooter>
       </Card>
 
@@ -120,7 +120,7 @@ export function SummaryCards({
           </CardTitle>
         </CardHeader>
         <CardFooter className="text-xs text-muted-foreground">
-          Spent in this calendar view month
+          Spent in this calendar view month (excludes Transfer Funds)
         </CardFooter>
       </Card>
 

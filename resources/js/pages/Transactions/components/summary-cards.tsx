@@ -41,7 +41,7 @@ export function SummaryCards({ stats, filters }: SummaryCardsProps) {
                 </CardHeader>
                 <CardFooter className="flex-col items-start gap-1.5 text-sm">
                     <div className="line-clamp-1 flex gap-2 font-medium">Income flow <LucideIcons.TrendingUp className="size-4 text-green-500" /></div>
-                    <div className="text-muted-foreground">Total money received in selected period</div>
+                    <div className="text-muted-foreground">Total money received in selected period (excludes Transfer Funds)</div>
                 </CardFooter>
             </Card>
 
@@ -62,7 +62,7 @@ export function SummaryCards({ stats, filters }: SummaryCardsProps) {
                 </CardHeader>
                 <CardFooter className="flex-col items-start gap-1.5 text-sm">
                     <div className="line-clamp-1 flex gap-2 font-medium">Spending flow <LucideIcons.TrendingDown className="size-4 text-rose-500" /></div>
-                    <div className="text-muted-foreground">Total money spent in selected period</div>
+                    <div className="text-muted-foreground">Total money spent in selected period (excludes Transfer Funds)</div>
                 </CardFooter>
             </Card>
 
@@ -81,7 +81,7 @@ export function SummaryCards({ stats, filters }: SummaryCardsProps) {
                 </CardHeader>
                 <CardFooter className="flex-col items-start gap-1.5 text-sm">
                     <div className="line-clamp-1 flex gap-2 font-medium">Net movement <LucideIcons.Activity className="size-4 text-primary" /></div>
-                    <div className="text-muted-foreground">Overall balance change</div>
+                    <div className="text-muted-foreground">Overall balance change (excludes Transfer Funds)</div>
                 </CardFooter>
             </Card>
         </div>

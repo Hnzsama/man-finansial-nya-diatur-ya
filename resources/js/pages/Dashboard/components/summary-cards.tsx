@@ -74,7 +74,7 @@ export function SummaryCards({ stats }: SummaryCardsProps) {
           <div className="line-clamp-1 flex gap-2 font-medium">
             {stats.income_change >= 0 ? 'Increased from last month' : 'Decreased from last month'}
           </div>
-          <div className="text-muted-foreground">Total money in this month</div>
+          <div className="text-muted-foreground">Total money in this month (excludes Transfer Funds)</div>
         </CardFooter>
       </Card>
       
@@ -93,7 +93,7 @@ export function SummaryCards({ stats }: SummaryCardsProps) {
           <div className="line-clamp-1 flex gap-2 font-medium">
             {stats.expense_change >= 0 ? 'Increased from last month' : 'Decreased from last month'}
           </div>
-          <div className="text-muted-foreground">Total money out this month</div>
+          <div className="text-muted-foreground">Total money out this month (excludes Transfer Funds)</div>
         </CardFooter>
       </Card>
       
@@ -114,7 +114,7 @@ export function SummaryCards({ stats }: SummaryCardsProps) {
           <div className="line-clamp-1 flex gap-2 font-medium">
             {stats.net_flow >= 0 ? 'Surplus this month' : 'Deficit this month'}
           </div>
-          <div className="text-muted-foreground">Net cash flow for this month</div>
+          <div className="text-muted-foreground">Net cash flow for this month (excludes Transfer Funds)</div>
         </CardFooter>
       </Card>
     </div>
