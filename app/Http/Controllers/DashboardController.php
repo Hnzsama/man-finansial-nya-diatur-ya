@@ -180,7 +180,7 @@ class DashboardController extends Controller
             $totalPayable = $activeDebts->where('type', 'payable')->sum('remaining_amount');
             $totalReceivable = $activeDebts->where('type', 'receivable')->sum('remaining_amount');
             $overdueCount = $activeDebts->filter(
-                fn ($d) => $d->due_date !== null && $d->due_date->isPast()
+                fn ($d) => $d->due_date !== null && $d->due_date->lt(Carbon::today())
             )->count();
 
             $debtsSummary = [

@@ -141,6 +141,9 @@ export default function DebtsIndex({ debts, stats, wallets }: PageProps) {
       );
     }
 
+    const today = new Date();
+    const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {items.map((debt) => {
@@ -148,7 +151,7 @@ export default function DebtsIndex({ debts, stats, wallets }: PageProps) {
           const isSettled = debt.status === 'paid_off';
           
           const themeColor = isPayable ? '#f97316' : '#10b981';
-          const isOverdue = debt.due_date && new Date(debt.due_date) < new Date() && !isSettled;
+          const isOverdue = debt.due_date && debt.due_date < todayStr && !isSettled;
 
           return (
             <Card

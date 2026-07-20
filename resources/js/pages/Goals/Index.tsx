@@ -75,6 +75,9 @@ export default function GoalsIndex({ goals }: PageProps) {
   const [selectedGoal, setSelectedGoal] = useState<Goal | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
 
+  const today = new Date();
+  const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+
   const filteredGoals = useMemo(() => {
     if (!searchQuery) return goals;
     return goals.filter((g) => 
@@ -106,13 +109,12 @@ export default function GoalsIndex({ goals }: PageProps) {
   const getDeadlineText = (deadlineStr: string | null) => {
     if (!deadlineStr) return 'No deadline';
     const deadline = new Date(deadlineStr);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    deadline.setHours(0, 0, 0, 0);
-
-    const diffTime = deadline.getTime() - today.getTime();
+    const todayZero = new Date();
+    todayZero.setHours(0, 0, 0, 0);
+    const deadlineZero = new Date(deadline);
+    deadlineZero.setHours(0, 0, 0, 0);
+    const diffTime = deadlineZero.getTime() - todayZero.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
     if (diffDays === 0) return 'Deadline is today!';
     if (diffDays < 0) return `Overdue by ${Math.abs(diffDays)} day(s)`;
     return `${diffDays} day(s) remaining`;
@@ -121,6 +123,7 @@ export default function GoalsIndex({ goals }: PageProps) {
   return (
     <>
       <Head title="Savings Goals" />
+
       <div className="flex flex-1 flex-col">
         <div className="@container/main flex flex-1 flex-col gap-2">
           <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6 px-4 lg:px-6">
@@ -129,7 +132,7 @@ export default function GoalsIndex({ goals }: PageProps) {
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="space-y-1">
                 <h1 className="text-2xl font-bold tracking-tight">Savings Goals</h1>
-                <p className="text-sm text-muted-foreground">Plan for shopping, emergency funds, and other savings targets.</p>
+                <p className="text-sm text-muted-foreground">Set and track savings goals for specific dreams or emergency funds.</p>
               </div>
               <div className="flex items-center gap-2">
                 <div className="relative w-full sm:w-60">
@@ -143,7 +146,7 @@ export default function GoalsIndex({ goals }: PageProps) {
                 </div>
                 <Button onClick={openAddSheet} size="sm">
                   <IconPlus className="mr-2 h-4 w-4" />
-                  Add Goal
+                  New Savings Goal
                 </Button>
               </div>
             </div>
@@ -165,7 +168,7 @@ export default function GoalsIndex({ goals }: PageProps) {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredGoals.map((goal) => {
                   const isAchieved = Number(goal.current_amount) >= Number(goal.target_amount);
-                  const isOverdue = goal.deadline && new Date(goal.deadline) < new Date() && !isAchieved;
+                  const isOverdue = goal.deadline && goal.deadline < todayStr && !isAchieved;
 
                   return (
                     <Card

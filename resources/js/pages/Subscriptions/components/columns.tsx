@@ -91,8 +91,11 @@ export const getColumns = (
     accessorKey: "next_billing_date",
     header: "Next Billing",
     cell: ({ row }) => {
-      const date = new Date(row.original.next_billing_date);
-      const isOverdue = date < new Date();
+      const dateStr = row.original.next_billing_date;
+      const today = new Date();
+      const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+      const isOverdue = dateStr < todayStr;
+      const date = new Date(dateStr);
       return (
         <span className={`inline-flex items-center gap-1 text-sm font-medium ${isOverdue && row.original.is_active ? 'text-destructive font-semibold animate-pulse' : ''}`}>
           <IconClock className="h-3.5 w-3.5" />

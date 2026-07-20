@@ -49,7 +49,7 @@ class DebtController extends Controller
                     return $d->amount - $d->remaining_amount;
                 }),
                 'overdue_debts' => $debts->where('status', 'active')->filter(function ($d) {
-                    return $d->due_date && Carbon::parse($d->due_date)->isPast();
+                    return $d->due_date && Carbon::parse($d->due_date)->lt(Carbon::today());
                 })->count(),
             ];
 
