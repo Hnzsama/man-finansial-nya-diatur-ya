@@ -36,7 +36,9 @@ class SendDueReminders extends Command
 
         foreach ($dueDebts as $debt) {
             $typeLabel = $debt->type === 'payable' ? 'Hutang (Harus Dibayar)' : 'Piutang (Harus Ditagih)';
-            $formattedAmount = number_format((float) $debt->remaining_amount, 0, ',', '.');
+            $amountVal = (float) $debt->remaining_amount;
+            $decimalsVal = $amountVal - floor($amountVal) > 0 ? 2 : 0;
+            $formattedAmount = number_format($amountVal, $decimalsVal, ',', '.');
             $dueDays = $today->diffInDays($debt->due_date, false);
 
             $dayText = $dueDays == 0 ? 'hari ini!' : ($dueDays == 1 ? 'besok!' : "dalam {$dueDays} hari.");
@@ -60,7 +62,9 @@ class SendDueReminders extends Command
             ->get();
 
         foreach ($dueSubscriptions as $sub) {
-            $formattedAmount = number_format((float) $sub->amount, 0, ',', '.');
+            $amountVal = (float) $sub->amount;
+            $decimalsVal = $amountVal - floor($amountVal) > 0 ? 2 : 0;
+            $formattedAmount = number_format($amountVal, $decimalsVal, ',', '.');
             $dueDays = $today->diffInDays($sub->next_billing_date, false);
             $dayText = $dueDays == 0 ? 'hari ini!' : 'besok!';
 

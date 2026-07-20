@@ -6,26 +6,46 @@ interface AmountInputProps extends Omit<React.ComponentProps<typeof Input>, 'val
   onChange: (value: string) => void;
 }
 
+export const parseDisplayValue = (val: string): string => {
+  // Replace Indonesian decimal comma with dot, and remove thousand separator dots
+  let clean = val.replace(/\./g, '').replace(/,/g, '.');
+  // Keep only digits and the first dot
+  const parts = clean.split('.');
+  if (parts.length > 1) {
+    return parts[0].replace(/\D/g, '') + '.' + parts.slice(1).join('').replace(/\D/g, '');
+  }
+  return clean.replace(/\D/g, '');
+};
+
 export const formatNumberWithDots = (val: string | number): string => {
   if (val === undefined || val === null || val === '') {
     return '';
   }
-  const cleanValue = val.toString().replace(/\D/g, '');
-  if (!cleanValue) {
-    return '';
+  const valStr = val.toString();
+  const parts = valStr.split('.');
+  
+  // Format integer part
+  const integerPart = parts[0].replace(/\D/g, '');
+  const formattedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  
+  // If there's a decimal part, append it with a comma
+  if (parts.length > 1) {
+    const decimalPart = parts[1].replace(/\D/g, '');
+    return `${formattedInteger},${decimalPart}`;
   }
-  return cleanValue.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  
+  return formattedInteger;
 };
 
 export const parseNumberWithoutDots = (val: string): string => {
-  return val.replace(/\D/g, '');
+  return parseDisplayValue(val);
 };
 
 export function AmountInput({ value, onChange, ...props }: AmountInputProps) {
   const displayValue = formatNumberWithDots(value);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const rawVal = parseNumberWithoutDots(e.target.value);
+    const rawVal = parseDisplayValue(e.target.value);
     onChange(rawVal);
   };
 
@@ -38,3 +58,4 @@ export function AmountInput({ value, onChange, ...props }: AmountInputProps) {
     />
   )
 }
+

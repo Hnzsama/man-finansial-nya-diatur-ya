@@ -80,10 +80,12 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 const formatCurrency = (value: number | string) => {
   const numericValue = typeof value === 'string' ? parseFloat(value) : value;
-  return new Intl.NumberFormat('en-US', {
+  const hasDecimals = numericValue % 1 !== 0;
+  return new Intl.NumberFormat('id-ID', {
     style: 'currency',
     currency: 'IDR',
-    minimumFractionDigits: 0,
+    minimumFractionDigits: hasDecimals ? 2 : 0,
+    maximumFractionDigits: 2,
   }).format(numericValue);
 };
 

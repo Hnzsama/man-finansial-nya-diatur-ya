@@ -70,7 +70,9 @@ class Transaction extends Model
             $walletName = $transaction->wallet?->name ?? 'Unknown Wallet';
             $categoryName = $transaction->category?->name ?? 'No Category';
             $typeLabel = $transaction->type === 'income' ? 'Pemasukan' : 'Pengeluaran';
-            $formattedAmount = number_format((float) $transaction->amount, 0, ',', '.');
+            $amount = (float) $transaction->amount;
+            $decimals = $amount - floor($amount) > 0 ? 2 : 0;
+            $formattedAmount = number_format($amount, $decimals, ',', '.');
             $dateFormatted = $transaction->date ? $transaction->date->timezone('Asia/Jakarta')->format('d-m-Y H:i') : now('Asia/Jakarta')->format('d-m-Y H:i');
 
             $message = "🔔 *Notifikasi Transaksi Baru*\n\n"
