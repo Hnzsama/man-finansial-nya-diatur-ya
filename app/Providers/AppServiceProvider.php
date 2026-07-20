@@ -26,9 +26,9 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->configureDefaults();
 
-        if ($this->app->environment('production')) {
-            $this->app->usePublicPath(base_path('../'));
-        }
+        // if ($this->app->environment('production')) {
+        //     $this->app->usePublicPath(base_path('../'));
+        // }
 
         if ($this->app->environment('local')) {
             URL::forceScheme('https');
