@@ -12,7 +12,7 @@ import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { format } from 'date-fns';
-import { cn, parseLocalDate } from '@/lib/utils';
+import { cn, parseLocalDate, toLocalDateString } from '@/lib/utils';
 import {
   Select,
   SelectContent,
@@ -88,7 +88,7 @@ export function DebtSheet({
     if (isOpen && mode === 'edit' && debt) {
       editForm.setData({
         counterparty_name: debt.counterparty_name,
-        due_date: debt.due_date || '',
+        due_date: debt.due_date ? toLocalDateString(debt.due_date) : '',
         notes: debt.notes || '',
       });
     }

@@ -33,7 +33,18 @@ export function localTodayString(): string {
  * Use instead of `new Date(dateStr)` for date-only strings to avoid timezone offset.
  */
 export function parseLocalDate(dateStr: string): Date {
-    const [year, month, day] = dateStr.split('-').map(Number);
+    if (!dateStr || typeof dateStr !== 'string') {
+        return new Date();
+    }
+    const parts = dateStr.split('-');
+    if (parts.length < 3) {
+        const parsed = new Date(dateStr);
+        return isNaN(parsed.getTime()) ? new Date() : parsed;
+    }
+    const [year, month, day] = parts.map(Number);
+    if (isNaN(year) || isNaN(month) || isNaN(day)) {
+        return new Date();
+    }
     return new Date(year, month - 1, day);
 }
 
