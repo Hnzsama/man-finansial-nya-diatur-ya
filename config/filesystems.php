@@ -74,7 +74,9 @@ return [
     */
 
     'links' => [
-        public_path('storage') => storage_path('app/public'),
+        // Jika Production, buat symlink di luar proyek (../storage)
+        // Jika Local, tetap buat symlink di dalam proyek (public_path('storage'))
+        (env('APP_ENV') === 'production' ? base_path('../storage') : public_path('storage')) => storage_path('app/public'),
     ],
 
 ];
