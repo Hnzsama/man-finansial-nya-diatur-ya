@@ -226,7 +226,7 @@ class SubscriptionController extends Controller
                     'category_id' => $categoryId,
                     'type' => 'expense',
                     'amount' => $subscription->amount,
-                    'date' => Carbon::now()->format('Y-m-d'),
+                    'date' => Carbon::now('Asia/Jakarta')->utc(),
                     'notes' => 'Payment for subscription: '.$subscription->name,
                 ]);
 

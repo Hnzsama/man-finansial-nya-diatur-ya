@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\Transaction;
 use App\Models\Transfer;
 use App\Models\Wallet;
+use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -64,6 +65,10 @@ class TransferController extends Controller
                     'color' => '#10B981',
                 ]);
 
+                $txDate = Carbon::parse($validated['date'], 'Asia/Jakarta')
+                    ->setTimeFrom(Carbon::now('Asia/Jakarta'))
+                    ->utc();
+
                 // 1. Create Expense Transaction on source wallet
                 $expenseTx = Transaction::create([
                     'user_id' => $user->id,
@@ -71,7 +76,7 @@ class TransferController extends Controller
                     'category_id' => $transferOutCategory->id,
                     'type' => 'expense',
                     'amount' => $amount,
-                    'date' => $validated['date'],
+                    'date' => $txDate,
                     'notes' => $expenseNotes,
                     'metadata' => ['is_transfer' => true],
                 ]);
@@ -83,7 +88,7 @@ class TransferController extends Controller
                     'category_id' => $transferInCategory->id,
                     'type' => 'income',
                     'amount' => $amount,
-                    'date' => $validated['date'],
+                    'date' => $txDate,
                     'notes' => $incomeNotes,
                     'metadata' => ['is_transfer' => true],
                 ]);
@@ -97,7 +102,7 @@ class TransferController extends Controller
                     'income_transaction_id' => $incomeTx->id,
                     'amount' => $amount,
                     'exchange_rate' => 1.0000,
-                    'date' => $validated['date'],
+                    'date' => $txDate,
                     'notes' => $notesText ?: null,
                 ]);
 

@@ -75,7 +75,7 @@ class ProcessSubscriptions extends Command
                         'category_id' => $categoryId,
                         'type' => 'expense',
                         'amount' => $sub->amount,
-                        'date' => Carbon::now()->format('Y-m-d'),
+                        'date' => Carbon::now('Asia/Jakarta')->utc(),
                         'notes' => 'Payment for subscription: '.$sub->name.' (Automatic recurring payment)',
                     ]);
 

@@ -142,7 +142,7 @@ class DebtController extends Controller
                         'category_id' => $categoryId,
                         'type' => $txType,
                         'amount' => $validated['amount'],
-                        'date' => Carbon::now()->format('Y-m-d'),
+                        'date' => Carbon::now('Asia/Jakarta')->utc(),
                         'notes' => $txNotes,
                     ]);
 
@@ -288,6 +288,10 @@ class DebtController extends Controller
                     ])->id;
                 }
 
+                $txDate = Carbon::parse($validated['date'], 'Asia/Jakarta')
+                    ->setTimeFrom(Carbon::now('Asia/Jakarta'))
+                    ->utc();
+
                 // Create the Transaction
                 Transaction::create([
                     'user_id' => $user->id,
@@ -296,7 +300,7 @@ class DebtController extends Controller
                     'category_id' => $categoryId,
                     'type' => $txType,
                     'amount' => $paymentAmount,
-                    'date' => $validated['date'],
+                    'date' => $txDate,
                     'notes' => $txNotes,
                 ]);
 
