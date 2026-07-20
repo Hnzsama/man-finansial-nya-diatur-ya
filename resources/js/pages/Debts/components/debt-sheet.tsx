@@ -85,18 +85,20 @@ export function DebtSheet({
   });
 
   React.useEffect(() => {
-    if (isOpen) {
-      if (mode === 'edit' && debt) {
-        editForm.setData({
-          counterparty_name: debt.counterparty_name,
-          due_date: debt.due_date || '',
-          notes: debt.notes || '',
-        });
-      } else {
-        form.reset();
-      }
+    if (isOpen && mode === 'edit' && debt) {
+      editForm.setData({
+        counterparty_name: debt.counterparty_name,
+        due_date: debt.due_date || '',
+        notes: debt.notes || '',
+      });
     }
-  }, [isOpen, mode, debt]);
+  }, [debt]);
+
+  React.useEffect(() => {
+    if (isOpen && mode === 'add') {
+      form.reset();
+    }
+  }, [isOpen]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
