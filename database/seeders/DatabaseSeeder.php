@@ -16,13 +16,17 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // ── Primary user: hnzsama@gmail.com ───────────────────────────────
-        $primaryUser = User::firstOrCreate([
-            'email' => 'hnzsama@gmail.com',
-        ], [
-            'name' => 'Hnzsama',
-            'password' => bcrypt('password'),
-        ]);
+        // ── Users list ───────────────────────────────────────────────────
+        $users = [
+            [
+                'email' => 'hnzsama@gmail.com',
+                'name' => 'Hnzsama',
+            ],
+            [
+                'email' => 'galang@gmail.com',
+                'name' => 'Galang',
+            ],
+        ];
 
         // ── Income Categories ─────────────────────────────────────────────
         $incomeCategories = [
@@ -42,24 +46,41 @@ class DatabaseSeeder extends Seeder
             ['name' => 'Ngopi & Nongkrong', 'icon' => 'Coffee', 'color' => '#A16207'],
         ];
 
-        foreach ($incomeCategories as $cat) {
-            Category::create([
-                'user_id' => $primaryUser->id,
-                'name' => $cat['name'],
-                'type' => 'income',
-                'icon' => $cat['icon'],
-                'color' => $cat['color'],
-            ]);
-        }
+        foreach ($users as $userData) {
+            $exists = User::where('email', $userData['email'])->exists();
 
-        foreach ($expenseCategories as $cat) {
-            Category::create([
-                'user_id' => $primaryUser->id,
-                'name' => $cat['name'],
-                'type' => 'expense',
-                'icon' => $cat['icon'],
-                'color' => $cat['color'],
+            $user = User::firstOrCreate([
+                'email' => $userData['email'],
+            ], [
+                'name' => $userData['name'],
+                'password' => bcrypt('password'),
             ]);
+
+            if ($exists) {
+                continue;
+            }
+
+            foreach ($incomeCategories as $cat) {
+                Category::firstOrCreate([
+                    'user_id' => $user->id,
+                    'name' => $cat['name'],
+                    'type' => 'income',
+                ], [
+                    'icon' => $cat['icon'],
+                    'color' => $cat['color'],
+                ]);
+            }
+
+            foreach ($expenseCategories as $cat) {
+                Category::firstOrCreate([
+                    'user_id' => $user->id,
+                    'name' => $cat['name'],
+                    'type' => 'expense',
+                ], [
+                    'icon' => $cat['icon'],
+                    'color' => $cat['color'],
+                ]);
+            }
         }
     }
 }
