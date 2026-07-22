@@ -11,6 +11,7 @@ use App\Models\Transaction;
 use App\Models\Wallet;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
@@ -52,9 +53,9 @@ class DashboardController extends Controller
             $lastMonthExpense = $lastMonthTransactions->where('type', 'expense')->sum('amount');
             $lastMonthNetFlow = $lastMonthIncome - $lastMonthExpense;
 
-            $incomeChange = $lastMonthIncome > 0 ? (($monthlyIncome - $lastMonthIncome) / $lastMonthIncome) * 100 : 0;
-            $expenseChange = $lastMonthExpense > 0 ? (($monthlyExpense - $lastMonthExpense) / $lastMonthExpense) * 100 : 0;
-            $netFlowChange = $lastMonthNetFlow != 0 ? (($netFlow - $lastMonthNetFlow) / abs($lastMonthNetFlow)) * 100 : 0;
+            $incomeChange = $lastMonthIncome > 0 ? (($monthlyIncome - $lastMonthIncome) / $lastMonthIncome) * 100 : ($monthlyIncome > 0 ? 100 : 0);
+            $expenseChange = $lastMonthExpense > 0 ? (($monthlyExpense - $lastMonthExpense) / $lastMonthExpense) * 100 : ($monthlyExpense > 0 ? 100 : 0);
+            $netFlowChange = $lastMonthNetFlow != 0 ? (($netFlow - $lastMonthNetFlow) / abs($lastMonthNetFlow)) * 100 : ($netFlow != 0 ? 100 : 0);
 
             $stats = [
                 'total_balance' => (float) $totalBalance,
@@ -116,7 +117,7 @@ class DashboardController extends Controller
                 ->with('category')
                 ->get();
 
-            /** @var array<int, array{id:int, name:string, limit:float, spent:float, category:string|null, period:string}> $topBudgets */
+            /** @var Collection<int, array{id:int, name:string, limit:float, spent:float, category:string|null, period:string}> $topBudgets */
             $topBudgets = $activeBudgets->map(function ($budget) use ($userId, $startOfMonth, $endOfMonth) {
                 $spent = Transaction::where('user_id', $userId)
                     ->where('type', 'expense')
@@ -138,7 +139,7 @@ class DashboardController extends Controller
             $budgetsSummary = [
                 'count' => $activeBudgets->count(),
                 'total_limit' => (float) $activeBudgets->sum('amount_limit'),
-                'total_spent' => (float) $topBudgets->sum('spent'),
+                'total_spent' => (float) collect($topBudgets)->sum('spent'),
             ];
 
             // ── 6. Goals Summary ───────────────────────────────────────────

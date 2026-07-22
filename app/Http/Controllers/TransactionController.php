@@ -113,8 +113,8 @@ class TransactionController extends Controller
                 $lastExpense = $lastPeriodTransactions->where('type', 'expense')->sum('amount');
             }
 
-            $incomeChange = $lastIncome > 0 ? (($income - $lastIncome) / $lastIncome) * 100 : 0;
-            $expenseChange = $lastExpense > 0 ? (($expense - $lastExpense) / $lastExpense) * 100 : 0;
+            $incomeChange = $lastIncome > 0 ? (($income - $lastIncome) / $lastIncome) * 100 : ($income > 0 ? 100 : 0);
+            $expenseChange = $lastExpense > 0 ? (($expense - $lastExpense) / $lastExpense) * 100 : ($expense > 0 ? 100 : 0);
 
             $stats = [
                 'total_income' => $income,
