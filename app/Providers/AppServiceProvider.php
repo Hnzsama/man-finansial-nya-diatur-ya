@@ -30,7 +30,7 @@ class AppServiceProvider extends ServiceProvider
             $this->app->usePublicPath(base_path('../'));
         }
 
-        if ($this->app->environment('local')) {
+        if ($this->app->environment('production')) {
             URL::forceScheme('https');
         }
     }
