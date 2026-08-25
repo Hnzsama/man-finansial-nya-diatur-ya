@@ -26,6 +26,10 @@ class DatabaseSeeder extends Seeder
                 'email' => 'galang@gmail.com',
                 'name' => 'Galang',
             ],
+            [
+                'email' => '25091397086@mhs.unesa.ac.id',
+                'name' => 'Luqman',
+            ],
         ];
 
         // ── Income Categories ─────────────────────────────────────────────
